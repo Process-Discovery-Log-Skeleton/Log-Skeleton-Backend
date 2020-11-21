@@ -1,5 +1,4 @@
-# Log-Skeleton-Backend
-
+<h1 align="center">Log-Skeleton-Backend</h1>
 
 ### Installation & Setup
 
