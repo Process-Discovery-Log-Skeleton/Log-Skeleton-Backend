@@ -19,7 +19,8 @@ To install the required dependencies use the following commands:
 
 🚨 Install a python linter:
 
-```pip install flake8```
+```pip install flake8 flake8-docstrings```
+
 
 ✅ Install pytest for unit testing.
 
