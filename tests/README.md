@@ -11,9 +11,11 @@ To install it run:
 #### Create new tests
 
 1. Create your test file 📄
-```pytest``` will run all files of the format ```test_*.py``` or ```*_test.py```.
+
+   ```pytest``` will run all files of the format ```test_*.py``` or ```*_test.py```.
 
 2. Import pytest 🚚
+
    At the top of your file add:
      ```import pytest```
 
