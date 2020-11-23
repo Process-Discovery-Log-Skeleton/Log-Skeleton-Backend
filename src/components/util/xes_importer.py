@@ -1,7 +1,9 @@
 from pm4py.objects.log.importer.xes import importer as xes_importer
 from tempfile import NamedTemporaryFile
+from flask import request
 
 class XES_Importer:
+
 
     def __save_to_temp_file(self, content: str):
 
@@ -13,33 +15,21 @@ class XES_Importer:
 
         return file
 
+
     def import_file(self, path: str):
         log = xes_importer.apply(path)
 
-        print(log[0])
+        return log
 
-        print(log[0][0])
 
     def import_str(self, event_log: str):
 
         file = self.__save_to_temp_file(event_log)
 
-        self.import_file(file.name)
-        
+        return self.import_file(file.name)
 
 
-if __name__ == "__main__":
-    importer = XES_Importer()
+    def import_http_query(self, request):
+        data = request.data
 
-    with open('./res/logs/running-example.xes') as f:
-        content = f.read()
-        
-        importer.import_str(content)
-
-        
-
-
-
-
-
-
+        return self.import_str(data)
