@@ -11,11 +11,11 @@
 
 ### Installation & Setup
 
-This project requires python version 3.x.x (it is recommended to use the latest stable version of python.).
+This project requires python version < 3.9.x (some requirements are not compatible with 3.9.x).
 
 To install the required dependencies use the following commands:
 
-🐍 Download and install the latest version of python 3.
+🐍 Download and install python 3 (lower than python 3.9).
 
 🚨 Install a python linter:
 
@@ -33,3 +33,23 @@ To install the required dependencies use the following commands:
 📈 Install pm4py for some process discovery helpers.
 
   ```pip install pm4py```
+
+
+### Starting the REST-API server
+
+🚀 To start the application run:
+
+  ```python /src/api/server.py```
+
+This command will start a HTTP server for the REST-API.
+
+
+### Using the REST-API
+
+**Endpoints:**
+
+```/log-skeleton```
+
+This HTTP endpoint will accept an XES event log as the input and return a log-skeleton model based on that model.
+
+🏗 *Warning! The endpoint is currently developed.*
