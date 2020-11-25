@@ -1,9 +1,15 @@
 """Base class for the log-skeleton relationship implementations."""
+
+import os
+import uuid
+import itertools
+from src.components.util.xes_importer import XES_Importer
+
 # XES-concept extension. General identifier field of an event.
 __CONCEPT_NAME__ = 'concept:name'
 
-from src.components.util.xes_importer import XES_Importer
-
+TRACE_START = {__CONCEPT_NAME__: uuid.uuid4().hex}
+TRACE_END = {__CONCEPT_NAME__: uuid.uuid4().hex}
 
 class Relationship:
     """Base class for the log-skeleton relationship implementations.
@@ -13,9 +19,16 @@ class Relationship:
     implementation of the relationship algorithm as easy as possible.
     """
 
-    def __init__(self, traces):
+    def __init__(self, log, extended=False):
         """Store the traces."""
-        self.traces = traces
+        self.log = log
+
+        if extended:
+            self.log = map(lambda trace: self.extended_trace(trace), log)
+
+    def extended_trace(self, trace):
+        """Convert a trace to the extended trace"""
+        return [TRACE_START] + trace + [TRACE_END]
 
     # Activity related functions
     def activity_concept_name(self, activity):
@@ -51,24 +64,47 @@ class Relationship:
 
     def apply(self):
         """Implement a relationship algorithm."""
-        result = []
+        results = []
 
-        for trace in self.traces:
+        for trace in self.log:
             res = self.apply_to_trace(trace)
 
-            result.append(res)
+            results.append(res)
 
-        return result
+        # Flatten out the list
+        # Each apply_to_trace returns a list of results.
+        #   results might look like -> [[(a, b), (b, c)], [(b, d)], [(c, a)]]
+        # Flattening this example leads to: [(a, b), (b, c), (b, d), (c, a)]
+        flattenedResult = [val for traceRes in results for val in traceRes]
+
+        return flattenedResult
 
     def apply_to_trace(self, trace):
-        """Apply a certain algorithm to a spectific trace."""
-        raise NotImplementedError
+        """Apply the matching algorithm to each pair of activities."""
 
+        # trace = [a, b, c]
+        # trace x trace = [(a, a), (a, b), ..., (c, a), (c, b), (c, c)]
+        source = list(itertools.product(trace, trace))
+
+        result = []
+
+        for a1, a2 in source:
+            if self.activity_pair_matches(a1, a2):
+                result.append((a1, a2))
+        
+        return result
+
+    def activity_pair_matches(self, activity1, activity2):
+        """Determine if the given pair of activities is in the result."""
+        raise NotImplementedError
 
 if __name__ == "__main__":
     importer = XES_Importer()
 
-    log = importer.import_file('../../../res/logs/running-example.xes')
+    path = os.path.join(
+        os.path.dirname(__file__), '../../../res/logs/running-example.xes')
+
+    log = importer.import_file(path)
 
     print(log[0])
     print('Activity')
