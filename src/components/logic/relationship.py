@@ -33,7 +33,6 @@ class Relationship:
             for activity in trace:
                 activities.add(self.activity_concept_name(activity))
 
-        print(activities)
         return activities
 
     def extended_trace(self, trace):
@@ -89,7 +88,6 @@ class Relationship:
         # trace x trace = [(a, a), (a, b), ..., (c, a), (c, b), (c, c)]
         source = itertools.product(self.activities, self.activities)
 
-        print(self.log)
         for a1, a2 in source:
             res = True
             for trace in self.log:
@@ -118,7 +116,7 @@ class Relationship:
 
         return False
 
-    def activity_pair_matches(self, activity1, activity2) -> bool:
+    def activity_pair_matches(self, trace, activity1, activity2) -> bool:
         """Determine if the given pair of activities is in the result."""
         raise NotImplementedError
 
