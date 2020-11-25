@@ -1,1 +1,1 @@
-"""Init file for the package."""
+"""Python module."""
