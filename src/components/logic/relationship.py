@@ -93,7 +93,6 @@ class Relationship:
         for a1, a2 in source:
             res = True
             for trace in self.log:
-                print('trace')
                 res = res and self.apply_to_trace(trace, a1, a2)
 
             if res:
