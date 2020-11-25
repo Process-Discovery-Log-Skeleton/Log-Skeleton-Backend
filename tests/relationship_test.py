@@ -62,3 +62,10 @@ def test_last():
 def test_count():
     """Test the count function of the relationship base class."""
     assert rel.count(traces[0]) == 3
+
+
+def test_is_empty():
+    """Test the is_empty function of the relationship base class."""
+    assert rel.is_empty([])
+
+    assert not rel.is_empty(traces)

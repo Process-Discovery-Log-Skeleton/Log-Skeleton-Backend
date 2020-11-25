@@ -23,6 +23,9 @@ class Relationship:
         return activity[__CONCEPT_NAME__]
 
     # Trace related functions
+    def is_empty(self, trace):
+        """Return whether the trace is empty."""
+        return len(trace) == 0
 
     def project_trace(self, trace, elements):
         """Project the trace to a given set of activities."""
