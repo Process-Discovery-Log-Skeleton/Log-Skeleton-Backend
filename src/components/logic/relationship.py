@@ -22,9 +22,11 @@ class Relationship:
         """
         Project the trace to a given set of activities.
         """
-        activity_names = elements.map(lambda ac: self.activity_concept_name(ac))
+        activity_names = list(map(lambda ac: self.activity_concept_name(ac), elements))
 
-        return trace.filter(lambda ac: activity_names.contains(self.activity_concept_name(ac)))
+        res = filter(lambda ac: self.activity_concept_name(ac) in activity_names, trace)
+
+        return list(res)
 
     def first(self, trace):
         """
@@ -55,7 +57,7 @@ class Relationship:
 
             result.append(res)
 
-        return res
+        return result
 
     def apply_to_trace(self, trace):
         """
