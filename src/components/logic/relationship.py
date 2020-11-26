@@ -1,5 +1,6 @@
 """Base class for the log-skeleton relationship implementations."""
 
+from enum import Enum
 import os
 import uuid
 import itertools
@@ -20,12 +21,17 @@ class Relationship:
     implementation of the relationship algorithm as easy as possible.
     """
 
+    class Mode (Enum):
+        FORALL = 0
+        EXISTS = 1
+
     def __init__(self, log):
         """Store the traces."""
         self.log = log
         self.activities = self.extract_activities()
 
         self.include_extenstions = False
+        self.mode = Relationship.Mode.FORALL
 
         for i in range(len(log)):
             log[i] = self.extended_trace(log[i])
@@ -74,6 +80,24 @@ class Relationship:
 
         return list(map(lambda ac: self.activity_concept_name(ac), res))
 
+    def subtrace_count(self, trace, subtrace):
+        """Count the number of occurences of subtrace in trace"""
+        if len(subtrace) == 0:
+            return 0
+
+        count = 0
+
+        tr = list(map(lambda ac: self.activity_concept_name(ac), trace))
+
+        for index in range(len(tr) - len(subtrace) + 1):
+            slice = tr[index:index + len(subtrace)]
+
+            if subtrace == slice:
+                count += 1
+
+        return count
+
+
     def first(self, trace):
         """Return the first activity."""
         return trace[0]
@@ -98,16 +122,29 @@ class Relationship:
 
         source = self.create_relation_superset()
 
-        for a1, a2 in source:
-            res = True
-            for trace in self.log:
-                res = res and self.apply_to_trace(trace, a1, a2)
+        if self.mode == Relationship.Mode.FORALL: # For all condition
+            for a1, a2 in source:
+                res = True
+                for trace in self.log:
+                    res = res and self.apply_to_trace(trace, a1, a2)
 
-                if not res:
-                    break
+                    if not res:
+                        break
 
-            if res:
-                results.append((a1, a2))
+                if res:
+                    results.append((a1, a2))
+
+        else: # Exists condition
+            for a1, a2 in source:
+                res = False
+                for trace in self.log:
+                    res = res or self.apply_to_trace(trace, a1, a2)
+
+                    if res:
+                        break
+
+                if res:
+                    results.append((a1, a2))
 
         return results
 
@@ -115,7 +152,7 @@ class Relationship:
         """Apply the matching algorithm to each pair of activities."""
         if self.activity_pair_matches(trace, a1, a2):
 
-            if self.include_extenstions and (self.is_extension_activity(a1) \
+            if not self.include_extenstions and (self.is_extension_activity(a1) \
                     or self.is_extension_activity(a2)):
                 return False
 
