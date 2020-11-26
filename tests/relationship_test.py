@@ -24,7 +24,7 @@ traces = [
 ]
 
 
-rel = Relationship(traces)
+rel = Relationship(traces, extended_trace=False)
 
 
 def test_activity_concept_name():
