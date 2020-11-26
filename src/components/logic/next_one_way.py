@@ -5,7 +5,9 @@ from src.components.logic.relationship import Relationship
 from src.components.util.xes_importer import XES_Importer
 from pm4py.algo.discovery.log_skeleton import algorithm as lsk_discovery
 
-class Next_One_Way (Relationship): 
+
+class Next_One_Way (Relationship):
+    """Implementation of the next-one-way relationship algorithm."""
 
     def __init__(self, log):
         """Store the traces."""
@@ -16,6 +18,7 @@ class Next_One_Way (Relationship):
     def activity_pair_matches(self, trace, activity1, activity2) -> bool:
         """Determine if the subtrace [a1, a2] occurs in trace."""
         return self.subtrace_count(trace, [activity1, activity2]) > 0
+
 
 if __name__ == "__main__":
     importer = XES_Importer()

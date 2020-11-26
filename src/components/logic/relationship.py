@@ -22,6 +22,8 @@ class Relationship:
     """
 
     class Mode (Enum):
+        """Operation mode of the apply method."""
+
         FORALL = 0
         EXISTS = 1
 
@@ -36,7 +38,6 @@ class Relationship:
         if extended_trace:
             for i in range(len(log)):
                 log[i] = self.extended_trace(log[i])
-
 
     def extract_activities(self):
         """Extract the activity set from the log."""
@@ -82,7 +83,7 @@ class Relationship:
         return list(map(lambda ac: self.activity_concept_name(ac), res))
 
     def subtrace_count(self, trace, subtrace):
-        """Count the number of occurences of subtrace in trace"""
+        """Count the number of occurences of subtrace in trace."""
         if len(subtrace) == 0:
             return 0
 
@@ -98,7 +99,6 @@ class Relationship:
 
         return count
 
-
     def first(self, trace):
         """Return the first activity."""
         return trace[0]
@@ -112,7 +112,7 @@ class Relationship:
         return len(trace)
 
     def create_relation_superset(self):
-        """Creates the crossproduct of the actvities"""
+        """Create the crossproduct of the actvities."""
         # trace = [a, b, c]
         # trace x trace = [(a, a), (a, b), ..., (c, a), (c, b), (c, c)]
         return itertools.product(self.activities, self.activities)
@@ -123,7 +123,7 @@ class Relationship:
 
         source = self.create_relation_superset()
 
-        if self.mode == Relationship.Mode.FORALL: # For all condition
+        if self.mode == Relationship.Mode.FORALL:  # For all condition
             for a1, a2 in source:
                 res = True
                 for trace in self.log:
@@ -135,7 +135,7 @@ class Relationship:
                 if res:
                     results.append((a1, a2))
 
-        else: # Exists condition
+        else:  # Exists condition
             for a1, a2 in source:
                 res = False
                 for trace in self.log:
@@ -153,8 +153,9 @@ class Relationship:
         """Apply the matching algorithm to each pair of activities."""
         if self.activity_pair_matches(trace, a1, a2):
 
-            if not self.include_extenstions and (self.is_extension_activity(a1) \
-                    or self.is_extension_activity(a2)):
+            if not self.include_extenstions and \
+                    (self.is_extension_activity(a1)
+                        or self.is_extension_activity(a2)):
                 return False
 
             return True
