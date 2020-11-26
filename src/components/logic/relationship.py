@@ -25,7 +25,7 @@ class Relationship:
         FORALL = 0
         EXISTS = 1
 
-    def __init__(self, log):
+    def __init__(self, log, extended_trace=True):
         """Store the traces."""
         self.log = log
         self.activities = self.extract_activities()
@@ -33,8 +33,9 @@ class Relationship:
         self.include_extenstions = False
         self.mode = Relationship.Mode.FORALL
 
-        for i in range(len(log)):
-            log[i] = self.extended_trace(log[i])
+        if extended_trace:
+            for i in range(len(log)):
+                log[i] = self.extended_trace(log[i])
 
 
     def extract_activities(self):
