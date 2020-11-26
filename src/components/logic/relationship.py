@@ -25,6 +25,12 @@ class Relationship:
         self.log = log
         self.activities = self.extract_activities()
 
+        self.include_extenstions = False
+
+        for i in range(len(log)):
+            log[i] = self.extended_trace(log[i])
+
+
     def extract_activities(self):
         """Extract the activity set from the log."""
         activities = set()
@@ -37,7 +43,7 @@ class Relationship:
 
     def extended_trace(self, trace):
         """Convert a trace to the extended trace."""
-        return [TRACE_START] + trace + [TRACE_END]
+        return [TRACE_START] + trace._list + [TRACE_END]
 
     # Activity related functions
     def activity_concept_name(self, activity) -> str:
@@ -109,8 +115,8 @@ class Relationship:
         """Apply the matching algorithm to each pair of activities."""
         if self.activity_pair_matches(trace, a1, a2):
 
-            if self.is_extension_activity(a1) \
-                    or self.is_extension_activity(a2) or a1 == a2:
+            if self.include_extenstions and (self.is_extension_activity(a1) \
+                    or self.is_extension_activity(a2)):
                 return False
 
             return True
