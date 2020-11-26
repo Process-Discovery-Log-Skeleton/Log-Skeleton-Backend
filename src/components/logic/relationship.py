@@ -80,27 +80,28 @@ class Relationship:
         """Return the number of activity in that one trace."""
         return len(trace)
 
+    def create_relation_superset(self):
+        """Creates the crossproduct of the actvities"""
+        # trace = [a, b, c]
+        # trace x trace = [(a, a), (a, b), ..., (c, a), (c, b), (c, c)]
+        return itertools.product(self.activities, self.activities)
+
     def apply(self):
         """Implement a relationship algorithm."""
         results = []
 
-        # trace = [a, b, c]
-        # trace x trace = [(a, a), (a, b), ..., (c, a), (c, b), (c, c)]
-        source = itertools.product(self.activities, self.activities)
+        source = self.create_relation_superset()
 
         for a1, a2 in source:
             res = True
             for trace in self.log:
                 res = res and self.apply_to_trace(trace, a1, a2)
 
+                if not res:
+                    break
+
             if res:
                 results.append((a1, a2))
-
-        # Flatten out the list
-        # Each apply_to_trace returns a list of results.
-        #   results might look like -> [[(a, b), (b, c)], [(b, d)], [(c, a)]]
-        # Flattening this example leads to: [(a, b), (b, c), (b, d), (c, a)]
-        # flattenedResult = [val for traceRes in results for val in traceRes]
 
         return results
 
