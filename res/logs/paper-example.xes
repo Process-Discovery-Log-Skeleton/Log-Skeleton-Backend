@@ -241,6 +241,14 @@
       <string key="Costs" value="50"/>
     </event>
     <event>
+      <string key="concept:name" value="a4"/>
+      <string key="org:resource" value="Pete"/>
+      <date key="time:timestamp" value="2010-12-30T14:32:00.000+01:00"/>
+      <string key="Activity" value="a4"/>
+      <string key="Resource" value="Pete"/>
+      <string key="Costs" value="50"/>
+    </event>
+    <event>
       <string key="concept:name" value="a5"/>
       <string key="org:resource" value="Pete"/>
       <date key="time:timestamp" value="2010-12-30T14:32:00.000+01:00"/>
