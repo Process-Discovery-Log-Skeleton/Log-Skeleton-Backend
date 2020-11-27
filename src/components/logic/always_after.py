@@ -20,12 +20,7 @@ class AlwaysAfter(Relationship):
 
         activity_projection = self.project_trace(trace, [activity1, activity2])
 
-        if activity1 not in activity_projection:
-            return True
-        elif activity_projection[-1] == activity2:
-            return True
-        else:
-            return False
+        return activity1 not in activity_projection or activity_projection[-1] == activity2
 
 
 if __name__ == '__main__':
