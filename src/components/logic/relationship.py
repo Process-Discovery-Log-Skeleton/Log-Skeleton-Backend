@@ -27,13 +27,15 @@ class Relationship:
         FORALL = 0
         EXISTS = 1
 
-    def __init__(self, log, extended_trace=True):
+    def __init__(self, log, mode=Mode.FORALL, include_extenstions=False, extended_trace=True):
         """Store the traces."""
         self.log = log
-        self.activities = self.extract_activities()
 
-        self.include_extenstions = False
-        self.mode = Relationship.Mode.FORALL
+        self.include_extenstions = self.include_extenstions
+
+        self.mode = mode
+
+        self.activities = self.extract_activities()
 
         if extended_trace:
             for i in range(len(log)):
@@ -119,7 +121,7 @@ class Relationship:
 
     def apply(self):
         """Implement a relationship algorithm."""
-        results = []
+        results = set()
 
         source = self.create_relation_superset()
 
@@ -133,9 +135,9 @@ class Relationship:
                         break
 
                 if res:
-                    results.append((a1, a2))
+                    results.add((a1, a2))
 
-        else:  # Exists condition
+        elif self.mode == Relationship.Mode.EXISTS:  # Exists condition
             for a1, a2 in source:
                 res = False
                 for trace in self.log:
@@ -145,7 +147,7 @@ class Relationship:
                         break
 
                 if res:
-                    results.append((a1, a2))
+                    results.add((a1, a2))
 
         return results
 

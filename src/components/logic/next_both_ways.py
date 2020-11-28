@@ -11,12 +11,11 @@ class Next_Both_Ways (Next_One_Way):
     def apply(self):
         """Filter of the next_one_way result."""
         next_one = super().apply()
-        next_both = list()
+        next_both = set()
 
         for tup in next_one:
-            for test in next_one:
-                if test == (tup[1], tup[0]):
-                    next_both.append(tup)
+            if (tup[1], tup[0]) in next_one:
+                next_both.add(tup)
 
         return next_both
 
