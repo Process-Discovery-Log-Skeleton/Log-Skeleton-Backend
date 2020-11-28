@@ -23,12 +23,12 @@ if __name__ == "__main__":
     importer = XES_Importer()
 
     path = os.path.join(
-        os.path.dirname(__file__), '../../../res/logs/running-example.xes')
+        os.path.dirname(__file__), '../../../res/logs/paper-example.xes')
 
     log = importer.import_file(path)
 
     skeleton = lsk_discovery.apply(
-        log, parameters={
+        log[0], parameters={
             lsk_discovery.Variants.CLASSIC.value.
             Parameters.NOISE_THRESHOLD: 1})
     print(skeleton)

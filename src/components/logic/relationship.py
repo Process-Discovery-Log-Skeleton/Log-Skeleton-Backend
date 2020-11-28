@@ -17,20 +17,44 @@ class Relationship:
     """
 
     class Mode (Enum):
-        """Operation mode of the apply method."""
+        """Operation mode of the apply method.
+
+        FORALL: In a FORALL relationship the condition
+        has to be true for all traces.
+
+        EXISTS: In a EXISTS relationship the condition
+        has to be true for at least one trace.
+        """
 
         FORALL = 0
         EXISTS = 1
 
-    def __init__(self, log, all_activs, mode=Mode.FORALL, include_extenstions=False):
-        """Store the traces."""
-        self.log = log
+    def __init__(self, log, all_activities = set(), mode=Mode.FORALL, include_extenstions=False):
+        """Initalizes and sets up the relationship.
 
-        self.include_extenstions = self.include_extenstions
+        Parameters:
+            log : Log of traces
+            all_activities : Collection of all occuring activities
+            mode (Relationship.Mode, optional): 
+            Mode in which the relationship operates. Defaults to Mode.FORALL.
+            include_extenstions (bool, optional): 
+            Determines whether the trace extensions 
+            will be included in the final set. Defaults to False.
+        """
+
+        if isinstance(log, tuple):
+            self.log = log[0]
+            self.activities = log[1]
+        else:
+            self.log = log
+            self.activities = all_activities
+
+            if len(all_activities) > 0:
+                raise TypeError('all_activs should not be empty!')
+
+        self.include_extenstions = include_extenstions
 
         self.mode = mode
-
-        self.activities = all_activs
 
     # Activity related functions
     def activity_concept_name(self, activity) -> str:
