@@ -29,7 +29,8 @@ class Relationship:
         FORALL = 0
         EXISTS = 1
 
-    def __init__(self, log, all_activities = set(), mode=Mode.FORALL, include_extenstions=False):
+    def __init__(self, log, all_activities = None, noise_threshold=0.0,
+            mode=Mode.FORALL, include_extenstions=False):
         """Initalizes and sets up the relationship.
 
         Parameters:
@@ -49,9 +50,10 @@ class Relationship:
             self.log = log
             self.activities = all_activities
 
-            if len(all_activities) > 0:
-                raise TypeError('all_activs should not be empty!')
+            if all_activities is None:
+                raise TypeError('all_activs should not be None!')
 
+        self.noise_threshold = noise_threshold
         self.include_extenstions = include_extenstions
 
         self.mode = mode
@@ -126,16 +128,16 @@ class Relationship:
 
         source = self.create_relation_superset()
 
+        total_traces = len(self.log)
+
         if self.mode == Relationship.Mode.FORALL:  # For all condition
             for a1, a2 in source:
-                res = True
+                res = 0
                 for trace in self.log:
-                    res = res and self.apply_to_trace(trace, a1, a2)
+                    apply = self.apply_to_trace(trace, a1, a2)
+                    res += 1 if apply else 0
 
-                    if not res:
-                        break
-
-                if res:
+                if res / total_traces >= (1 - self.noise_threshold):
                     results.add((a1, a2))
 
         elif self.mode == Relationship.Mode.EXISTS:  # Exists condition
