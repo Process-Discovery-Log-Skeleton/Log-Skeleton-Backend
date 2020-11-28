@@ -2,16 +2,11 @@
 
 from enum import Enum
 import os
-import uuid
 import itertools
-from src.components.util.xes_importer import XES_Importer
+from src.components.util.xes_importer import *
 
 # XES-concept extension. General identifier field of an event.
 __CONCEPT_NAME__ = 'concept:name'
-
-TRACE_START = {__CONCEPT_NAME__: uuid.uuid4().hex}
-TRACE_END = {__CONCEPT_NAME__: uuid.uuid4().hex}
-
 
 class Relationship:
     """Base class for the log-skeleton relationship implementations.
@@ -27,7 +22,7 @@ class Relationship:
         FORALL = 0
         EXISTS = 1
 
-    def __init__(self, log, mode=Mode.FORALL, include_extenstions=False, extended_trace=True):
+    def __init__(self, log, all_activs, mode=Mode.FORALL, include_extenstions=False):
         """Store the traces."""
         self.log = log
 
@@ -35,25 +30,7 @@ class Relationship:
 
         self.mode = mode
 
-        self.activities = self.extract_activities()
-
-        if extended_trace:
-            for i in range(len(log)):
-                log[i] = self.extended_trace(log[i])
-
-    def extract_activities(self):
-        """Extract the activity set from the log."""
-        activities = set()
-
-        for trace in self.log:
-            for activity in trace:
-                activities.add(self.activity_concept_name(activity))
-
-        return activities
-
-    def extended_trace(self, trace):
-        """Convert a trace to the extended trace."""
-        return [TRACE_START] + trace._list + [TRACE_END]
+        self.activities = all_activs
 
     # Activity related functions
     def activity_concept_name(self, activity) -> str:
