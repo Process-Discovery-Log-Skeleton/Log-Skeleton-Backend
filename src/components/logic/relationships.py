@@ -3,10 +3,9 @@
 from enum import Enum
 import os
 import itertools
-from src.components.util.xes_importer import *
+from src.components.util.xes_importer \
+    import XES_Importer, TRACE_START, TRACE_END, CONCEPT_NAME
 
-# XES-concept extension. General identifier field of an event.
-__CONCEPT_NAME__ = 'concept:name'
 
 class Relationship:
     """Base class for the log-skeleton relationship implementations.
@@ -29,20 +28,19 @@ class Relationship:
         FORALL = 0
         EXISTS = 1
 
-    def __init__(self, log, all_activities = None, noise_threshold=0.0,
-            mode=Mode.FORALL, include_extenstions=False):
-        """Initalizes and sets up the relationship.
+    def __init__(self, log, all_activities=None, noise_threshold=0.0,
+                 mode=Mode.FORALL, include_extenstions=False):
+        """Init the relationship.
 
         Parameters:
             log : Log of traces
             all_activities : Collection of all occuring activities
-            mode (Relationship.Mode, optional): 
+            mode (Relationship.Mode, optional):
             Mode in which the relationship operates. Defaults to Mode.FORALL.
-            include_extenstions (bool, optional): 
-            Determines whether the trace extensions 
+            include_extenstions (bool, optional):
+            Determines whether the trace extensions
             will be included in the final set. Defaults to False.
         """
-
         if isinstance(log, tuple):
             self.log = log[0]
             self.activities = log[1]
@@ -61,7 +59,7 @@ class Relationship:
     # Activity related functions
     def activity_concept_name(self, activity) -> str:
         """Extract the concept:name of an activity."""
-        return activity[__CONCEPT_NAME__]
+        return activity[CONCEPT_NAME]
 
     def is_start(self, activity) -> bool:
         """Determine whether an activity is the start activity."""
@@ -216,10 +214,10 @@ class Equivalence (Relationship):
     """Wrapper class to calculate the equivalence relationship."""
 
     def activity_pair_matches(self, trace, activity1, activity2):
-        """Determine if the activtiy pair has the same frequencies in the trace.""" 
+        """Determine if the activtiy pair has the same frequencies in the trace."""  # noqa: E501
         projection1 = self.project_trace(trace, [activity1])
         projection2 = self.project_trace(trace, [activity2])
-        
+
         return (len(projection1) == len(projection2))
 
 
@@ -227,32 +225,33 @@ class Always_Before (Relationship):
     """Implementation of the always-before relationship."""
 
     def activity_pair_matches(self, trace, activity1, activity2):
-        """Determine if the activtiy pair matches the always_before relationship.""" 
+        """Determine if the activtiy pair matches the always_before relationship."""  # noqa: E501
         projection1 = self.project_trace(trace, [activity1])
         projection2 = self.project_trace(trace, [activity1, activity2])
 
-        return (self.is_empty(projection1) or self.first(projection2) == activity2)
+        return (self.is_empty(projection1)
+                or self.first(projection2) == activity2)
 
 
 class AlwaysAfter(Relationship):
-    """ Implementation of the always after relationship"""
+    """Implementation of the always after relationship."""
 
     def activity_pair_matches(self, trace, activity1, activity2) -> bool:
-        """Determine if the given pair of activities in the always after condition."""
-
-        # Non-reflexive
-        if activity1 == activity2:
+        """Determine if the given pair of activities in the always after condition."""  # noqa: E501
+        if activity1 == activity2:  # Non-reflexive
             return False
 
         activity_projection = self.project_trace(trace, [activity1, activity2])
 
-        return activity1 not in activity_projection or activity_projection[-1] == activity2
+        return activity1 not in activity_projection \
+            or activity_projection[-1] == activity2
 
 
 class Counter(Relationship):
     """Wrapper class to calculate the equivalence relationship."""
 
     def apply(self):
+        """Apply the couter algorithm to the log."""
         counter = {}
         for act in self.activities:
             freq = []

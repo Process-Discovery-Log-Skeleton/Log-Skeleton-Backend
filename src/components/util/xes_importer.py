@@ -4,10 +4,11 @@ from tempfile import NamedTemporaryFile
 import uuid
 
 # XES-concept extension. General identifier field of an event.
-__CONCEPT_NAME__ = 'concept:name'
+CONCEPT_NAME = 'concept:name'
 
-TRACE_START = {__CONCEPT_NAME__: uuid.uuid4().hex}
-TRACE_END = {__CONCEPT_NAME__: uuid.uuid4().hex}
+TRACE_START = {CONCEPT_NAME: uuid.uuid4().hex}
+TRACE_END = {CONCEPT_NAME: uuid.uuid4().hex}
+
 
 class XES_Importer:
     """Importer class for importing XES event logs.
@@ -29,7 +30,7 @@ class XES_Importer:
         """Import XES event logs from a given file.
 
         Returns:
-            A tuple containing the imported log alongside 
+            A tuple containing the imported log alongside
             the set of activites.
         """
         log = xes_importer.apply(path)
@@ -46,23 +47,23 @@ class XES_Importer:
         """Import XES event logs from a given string.
 
         Returns:
-            A tuple containing the imported log alongside 
+            A tuple containing the imported log alongside
             the set of activites.
         """
         file = self.__save_to_temp_file(event_log)
 
-        return self.import_file(file.name)
+        return self.import_file(file.name, extended_trace=extended_trace)
 
     def import_http_query(self, request, extended_trace=True):
         """Import XES event logs from a given HTTP request.
-        
+
         Returns:
-            A tuple containing the imported log alongside 
+            A tuple containing the imported log alongside
             the set of activites.
         """
         data = request.data
 
-        return self.import_str(data)
+        return self.import_str(data, extended_trace=extended_trace)
 
     # Trace extension
     def extract_activities(self, log):
@@ -81,4 +82,4 @@ class XES_Importer:
 
     def activity_concept_name(self, activity) -> str:
         """Extract the concept:name of an activity."""
-        return activity[__CONCEPT_NAME__]
+        return activity[CONCEPT_NAME]
