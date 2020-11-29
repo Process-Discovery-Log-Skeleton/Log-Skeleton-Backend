@@ -172,6 +172,97 @@ class Relationship:
         raise NotImplementedError
 
 
+class Next_One_Way (Relationship):
+    """Implementation of the next-one-way relationship algorithm."""
+
+    def __init__(self, log):
+        """Store the traces."""
+        super().__init__(log)
+
+        self.mode = Relationship.Mode.EXISTS
+
+    def activity_pair_matches(self, trace, activity1, activity2) -> bool:
+        """Determine if the subtrace [a1, a2] occurs in trace."""
+        return self.subtrace_count(trace, [activity1, activity2]) > 0
+
+
+class Next_Both_Ways (Next_One_Way):
+    """Implementation of the next-both-ways relationship algorithm."""
+
+    def apply(self):
+        """Filter of the next_one_way result."""
+        next_one = super().apply()
+        next_both = set()
+
+        for tup in next_one:
+            if (tup[1], tup[0]) in next_one:
+                next_both.add(tup)
+
+        return next_both
+
+
+class Never_Together (Relationship):
+    """Implementation of the never-together relationship."""
+
+    def activity_pair_matches(self, trace, activity1, activity2):
+        """Determine if the activtiy pair matches the never-together relationship."""  # noqa: E501
+        projection1 = self.project_trace(trace, [activity1])
+        projection2 = self.project_trace(trace, [activity2])
+
+        return (self.is_empty(projection1) or self.is_empty(projection2))
+
+
+class Equivalence (Relationship):
+    """Wrapper class to calculate the equivalence relationship."""
+
+    def activity_pair_matches(self, trace, activity1, activity2):
+        """Determine if the activtiy pair has the same frequencies in the trace.""" 
+        projection1 = self.project_trace(trace, [activity1])
+        projection2 = self.project_trace(trace, [activity2])
+        
+        return (len(projection1) == len(projection2))
+
+
+class Always_Before (Relationship):
+    """Implementation of the always-before relationship."""
+
+    def activity_pair_matches(self, trace, activity1, activity2):
+        """Determine if the activtiy pair matches the always_before relationship.""" 
+        projection1 = self.project_trace(trace, [activity1])
+        projection2 = self.project_trace(trace, [activity1, activity2])
+
+        return (self.is_empty(projection1) or self.first(projection2) == activity2)
+
+
+class AlwaysAfter(Relationship):
+    """ Implementation of the always after relationship"""
+
+    def activity_pair_matches(self, trace, activity1, activity2) -> bool:
+        """Determine if the given pair of activities in the always after condition."""
+
+        # Non-reflexive
+        if activity1 == activity2:
+            return False
+
+        activity_projection = self.project_trace(trace, [activity1, activity2])
+
+        return activity1 not in activity_projection or activity_projection[-1] == activity2
+
+
+class Counter(Relationship):
+    """Wrapper class to calculate the equivalence relationship."""
+
+    def apply(self):
+        counter = {}
+        for act in self.activities:
+            freq = []
+            for trace in self.log:
+                freq.append(len(self.project_trace(trace, [act])))
+            counter[act] = {'sum': sum(freq), 'min': min(freq),
+                            'max': max(freq)}
+        return counter
+
+
 if __name__ == "__main__":
     importer = XES_Importer()
 
