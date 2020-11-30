@@ -25,7 +25,7 @@ def test_import_by_str():
     log = load_example_event_log()
 
     # Import the event log via the importer
-    event_log = importer.import_str(log)
+    event_log = importer.import_str(log, extended_trace=False)
 
     path = os.path.join(
         os.path.dirname(__file__), '../res/logs/running-example.xes')
@@ -34,7 +34,7 @@ def test_import_by_str():
     comparison_log = xes_importer.apply(path)
 
     # Compare the two imports
-    assert str(event_log) == str(comparison_log)
+    assert str(event_log[0]) == str(comparison_log)
 
 
 def test_import_by_file():
@@ -45,7 +45,7 @@ def test_import_by_file():
         os.path.dirname(__file__), '../res/logs/running-example.xes')
 
     # Import the event log via the importer
-    event_log = importer.import_file(path)
+    event_log, activites = importer.import_file(path, extended_trace=False)
 
     # Import the event log via the PM4PY importer
     comparison_log = xes_importer.apply(path)

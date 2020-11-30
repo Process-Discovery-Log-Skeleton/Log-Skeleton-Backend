@@ -1,5 +1,5 @@
 """Test cases for the base relationship class."""
-from src.components.logic.relationship import Relationship
+from src.components.logic.relationships import Relationship
 
 traces = [
     [
@@ -24,7 +24,8 @@ traces = [
 ]
 
 
-rel = Relationship(traces, extended_trace=False)
+rel = Relationship(traces,
+                   {'Test1.1', 'Test1.2', 'Test1.3', 'Test2.1', 'Test2.2'})
 
 
 def test_activity_concept_name():
