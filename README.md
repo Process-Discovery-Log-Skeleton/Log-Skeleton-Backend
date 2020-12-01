@@ -9,7 +9,7 @@
 </p>
 
 
-### Installation & Setup
+#### Installation & Setup
 
 This project requires python version < 3.9.x (some requirements are not compatible with 3.9.x).
 
@@ -35,21 +35,40 @@ To install the required dependencies use the following commands:
   ```pip install pm4py```
 
 
-### Starting the REST-API server
+#### Starting the API server
 
 🚀 To start the application run:
 
-  ```python /src/api/server.py```
+  ```python -m src.api.server.py```
 
-This command will start a HTTP server for the REST-API.
+This command will start a HTTP server for the API.
 
 
-### Using the REST-API
+#### Using the API
 
-**Endpoints:**
+###### Endpoints:
 
 ```/log-skeleton```
 
 This HTTP endpoint will accept an XES event log as the input and return a log-skeleton model based on that model.
 
-🏗 *Warning! The endpoint is currently developed.*
+Provide an XES event-log in the body of the request for the server.
+
+###### Parameters:
+
+- `noise-thrshold`: Number between 0 and 1 to specitfy a _noise_threshold_ for the algorithm.
+- `extended-trace`: Boolean value indicating whether the trace extension will be included or not.
+
+###### The API-Response:
+
+In case the API gets used as it is inteded to be, it will return a JSON object containing the following items:
+
+- `always-after`: Contains a list of tuples representing the _always-after_ relationship.
+- `always-before`: Contains a list of tuples representing the _always-before_ relationship.
+- `equivalence`: Contains a list of tuples representing the _equivalence_ relationship.
+- `never_together`: Contains a list of tuples representing the _never_together_ relationship.
+- `next_one_way`: Contains a list of tuples representing the _next_one_way_ relationship.
+- `next_both_ways`: Contains a list of tuples representing the _next_both_ways_ relationship.
+- `counter`: Contains a JSON object representing the _counter_ relationships.
+- `parameters`: Contains a JSON object indicating the parameters applied and further information like IDs of the _trace start_ and _trace end_.
+
