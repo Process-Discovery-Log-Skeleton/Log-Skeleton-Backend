@@ -9,13 +9,13 @@ from pm4py.algo.discovery.log_skeleton import algorithm as lsk_discovery
 class Log_Skeleton:
     """Class that combines all relationships and generates a log skeleton."""
 
-    def __init__(self, log, all_activities, noise_threshhold):
+    def __init__(self, log, all_activities, noise_threshold):
         """Init an instance that will generate a log skeleton model.
 
         Parameters:
             log : Log of traces
             all_activities : Collection of all occuring activities
-            noise_threshhold : Set sentivity level for the algorithms
+            noise_threshold : Set sentivity level for the algorithms
         """
         self.log = log
         self.relationships = {
@@ -29,7 +29,7 @@ class Log_Skeleton:
             rel.Counter: 'counter',
         }
         self.all_activities = all_activities
-        self.noise_threshhold = noise_threshhold
+        self.noise_threshold = noise_threshold
 
     def apply(self):
         """Return the log skeleton model as a dictionary.
@@ -41,10 +41,7 @@ class Log_Skeleton:
         res = {}
         for r in self.relationships:
             r_instance = r(self.log, self.all_activities,
-                           self.noise_threshhold,
-                           rel.Relationship.Mode.FORALL, False)
-            if (r == rel.Next_One_Way):
-                r_instance.mode = rel.Relationship.Mode.EXISTS
+                           self.noise_threshold)
             res[self.relationships[r]] = r_instance.apply()
         return res
 
