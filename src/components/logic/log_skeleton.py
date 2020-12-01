@@ -29,7 +29,8 @@ class Log_Skeleton:
             rel.Counter: 'counter',
         }
         self.all_activities = all_activities
-        self.noise_threshold = noise_threshold
+        # Noise threshold only between 0 and 1
+        self.noise_threshold = min(1.0, max(0.0, noise_threshold))
 
     def apply(self):
         """Return the log skeleton model as a dictionary.

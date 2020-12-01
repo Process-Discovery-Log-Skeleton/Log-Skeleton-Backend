@@ -13,7 +13,7 @@ print('Loaded log...')
 headers = {'Content-Type': 'application/xml'}
 
 print('Calling API...')
-response = requests.get('http://localhost:5000/log-skeleton', data=event_log, headers=headers)
+response = requests.get('http://localhost:5000/log-skeleton?noise-threshold=-10', data=event_log, headers=headers)
 
 print(response.text)
 
