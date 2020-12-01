@@ -42,7 +42,7 @@ class Log_Skeleton:
         for r in self.relationships:
             r_instance = r(self.log, self.all_activities,
                            self.noise_threshold)
-            res[self.relationships[r]] = r_instance.apply()
+            res[self.relationships[r]] = list(r_instance.apply())
         return res
 
 
