@@ -1,9 +1,9 @@
 """Implemenation of the REST-API endpoint."""
 
 from flask import Flask, request, jsonify
-from flask import json
 from src.components.logic.log_skeleton import Log_Skeleton
-from src.components.util.xes_importer import *
+from src.components.util.xes_importer \
+    import XES_Importer, TRACE_START, TRACE_END
 
 __PARAMETERS__ = 'parameters'
 
@@ -21,6 +21,7 @@ __EXTENDED_TRACE_DEFAULT__ = False
 app = Flask(__name__)
 importer = XES_Importer()
 
+
 @app.route('/log-skeleton', methods=['GET'])
 def log_skeleton():
     """Provide endpoint at /log-skeleton."""
@@ -30,23 +31,31 @@ def log_skeleton():
 
     return response, code
 
+
 def strToBool(value):
+    """Convert a string value to bool.
+
+    True in case:
+        - 'true'
+        - 1
+    False in case:
+        - 'false'
+        - 0
+    """
     b = value.lower()
 
-    if b == 'true' or \
-       b == '1':
-       return True
+    if b == 'true' or b == '1':
+        return True
 
-    if b == 'false' or \
-       b == '0':
-       return False
+    if b == 'false' or b == '0':
+        return False
 
     return __EXTENDED_TRACE_DEFAULT__
 
 
 def apply(req):
     """Apply the log-skeleton algo to the input.
-    
+
     Returns a tuple containing the result in the first place
     and the http-code in the second.
 
@@ -58,37 +67,39 @@ def apply(req):
 
     noise_threshold = __NOISE_THRESHOLD_DEFAULT__
     include_extended_traces = __EXTENDED_TRACE_DEFAULT__
-    
+
     # Extract noise_threshold parameter
-    if not noise_para is None:
+    if noise_para is not None:
         try:
             noise_threshold = float(noise_para)
-        except:
+        except:  # noqa: E722
             return {
-                'error_msg': __NOISE_THRESHOLD__ + 
+                'error_msg': __NOISE_THRESHOLD__ +
                 ' parameter must be a number (between 0 and 1) value!'
             }, __BAD_REQUEST__
 
     # Extract extended traces parameter
-    if not trace_para is None:
+    if trace_para is not None:
         try:
             include_extended_traces = strToBool(trace_para)
-        except:
+        except:  # noqa: E722
             return {
-                'error_msg': __EXTENDED_TRACE__ + 
+                'error_msg': __EXTENDED_TRACE__ +
                 ' parameter must be a boolean value!'
             }, __BAD_REQUEST__
 
     try:
         log, activities = \
-        importer.import_http_query(req, extended_trace=include_extended_traces)
-    except:
+            importer.import_http_query(req,
+                                       extended_trace=include_extended_traces)
+    except:  # noqa: E722
         return {'error_msg': """Unable to import XES log.
                              Check your log on synax error"""}, \
                 __BAD_REQUEST__
 
-    
-    lsk_algorithm = Log_Skeleton(log, activities, noise_threshold, include_extended_traces)
+    lsk_algorithm = Log_Skeleton(log, activities,
+                                 noise_threshold,
+                                 include_extended_traces)
 
     model = lsk_algorithm.apply()
 

@@ -1,3 +1,5 @@
+"""Client test implementation for the API."""
+
 import requests
 import os
 
@@ -13,7 +15,8 @@ print('Loaded log...')
 headers = {'Content-Type': 'application/xml'}
 
 print('Calling API...')
-response = requests.get('http://localhost:5000/log-skeleton?noise-threshold=0&extended-trace=1', data=event_log, headers=headers)
+response = requests.get(
+    'http://localhost:5000/log-skeleton?noise-threshold=0&extended-trace=0',
+    data=event_log, headers=headers)
 
 print(response.text)
-

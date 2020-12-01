@@ -61,7 +61,7 @@ class XES_Importer:
             A tuple containing the imported log alongside
             the set of activites.
         """
-        data = str(request.data,'utf-8')
+        data = str(request.data, 'utf-8')
 
         return self.import_str(data, extended_trace=extended_trace)
 

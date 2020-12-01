@@ -9,7 +9,11 @@ from pm4py.algo.discovery.log_skeleton import algorithm as lsk_discovery
 class Log_Skeleton:
     """Class that combines all relationships and generates a log skeleton."""
 
-    def __init__(self, log, all_activities, noise_threshold, include_trace_extensions=False):
+    def __init__(self,
+                 log,
+                 all_activities,
+                 noise_threshold,
+                 include_trace_extensions=False):
         """Init an instance that will generate a log skeleton model.
 
         Parameters:
@@ -43,7 +47,7 @@ class Log_Skeleton:
         res = {}
         for r in self.relationships:
             r_instance = r(self.log, self.all_activities,
-                           self.noise_threshold, 
+                           self.noise_threshold,
                            include_extenstions=self.include_trace_extensions)
 
             res[self.relationships[r]] = r_instance.apply()
