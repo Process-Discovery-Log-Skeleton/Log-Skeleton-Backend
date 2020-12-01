@@ -17,7 +17,7 @@ To install the required dependencies use the following commands:
 
 🐍 Download and install python 3 (lower than python 3.9).
 
-🚨 Install a python linter:
+🚨 Install flake8 as for linting:
 
 ```pip install flake8 flake8-docstrings```
 
@@ -39,7 +39,7 @@ To install the required dependencies use the following commands:
 
 🚀 To start the application run:
 
-  ```python -m src.api.server.py```
+  ```python -m src.api.server```
 
 This command will start a HTTP server for the API.
 
