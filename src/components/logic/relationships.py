@@ -150,7 +150,7 @@ class Relationship:
                 if res:
                     results.add((a1, a2))
 
-        return results
+        return list(results)
 
     def apply_to_trace(self, trace, a1, a2) -> bool:
         """Apply the matching algorithm to each pair of activities."""
@@ -196,7 +196,7 @@ class Next_Both_Ways (Next_One_Way):
             if (tup[1], tup[0]) in next_one:
                 next_both.add(tup)
 
-        return next_both
+        return list(next_both)
 
 
 class Never_Together (Relationship):
