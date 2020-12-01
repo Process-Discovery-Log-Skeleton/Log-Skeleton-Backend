@@ -173,12 +173,6 @@ class Relationship:
 class Next_One_Way (Relationship):
     """Implementation of the next-one-way relationship algorithm."""
 
-    def __init__(self, log):
-        """Store the traces."""
-        super().__init__(log)
-
-        self.mode = Relationship.Mode.EXISTS
-
     def activity_pair_matches(self, trace, activity1, activity2) -> bool:
         """Determine if the subtrace [a1, a2] occurs in trace."""
         return self.subtrace_count(trace, [activity1, activity2]) > 0
