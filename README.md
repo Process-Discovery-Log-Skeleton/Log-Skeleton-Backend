@@ -56,7 +56,7 @@ Provide an XES event-log in the body of the request for the server.
 
 ###### Parameters:
 
-- `noise-thrshold`: Number between 0 and 1 to specitfy a _noise_threshold_ for the algorithm.
+- `noise-threshold`: Number between 0 and 1 to specitfy a _noise_threshold_ for the algorithm.
 - `extended-trace`: Boolean value indicating whether the trace extension will be included or not.
 
 ###### The API-Response:
@@ -72,3 +72,17 @@ In case the API gets used as it is inteded to be, it will return a JSON object c
 - `counter`: Contains a JSON object representing the _counter_ relationships.
 - `parameters`: Contains a JSON object indicating the parameters applied and further information like IDs of the _trace start_ and _trace end_.
 
+###### Error codes
+
+In case of an error the API will respond with the appropriate HTTP error code. Further an error description will be provided in the response in the `error_msg` field.
+
+###### Examples
+
+The following example will return a log skeleton model for the given log in the body with a noise threshold of _3%_.
+`https://<domain>/log-skeleton?noise-threshold=0.03`
+
+The following example will return a log skeleton model for the given log in the body with a noise threshold of _3%_ and it will include the extended traces.
+`https://<domain>/log-skeleton?noise-threshold=0.1&extended-trace=true`
+
+The following example will return a _404_ error since there is no route called `/log-skleeton`.
+`https://<domain>/log-skleeton?noise-threshold=0.1`

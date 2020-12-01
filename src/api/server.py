@@ -53,13 +53,6 @@ def apply(req):
     Example:
         result, code: apply(request)
     """
-    try:
-        log, activities = importer.import_http_query(req)
-    except:
-        return {'error_msg': """Unable to import XES log.
-                             Check your log on synax error"""}, \
-                __BAD_REQUEST__
-
     noise_para = req.args.get(__NOISE_THRESHOLD__)
     trace_para = req.args.get(__EXTENDED_TRACE__)
 
@@ -85,8 +78,17 @@ def apply(req):
                 'error_msg': __EXTENDED_TRACE__ + 
                 ' parameter must be a boolean value!'
             }, __BAD_REQUEST__
+
+    try:
+        log, activities = \
+        importer.import_http_query(req, extended_trace=include_extended_traces)
+    except:
+        return {'error_msg': """Unable to import XES log.
+                             Check your log on synax error"""}, \
+                __BAD_REQUEST__
+
     
-    lsk_algorithm = Log_Skeleton(log, activities, noise_threshold)
+    lsk_algorithm = Log_Skeleton(log, activities, noise_threshold, include_extended_traces)
 
     model = lsk_algorithm.apply()
 
