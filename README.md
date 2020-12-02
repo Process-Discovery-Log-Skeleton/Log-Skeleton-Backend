@@ -81,7 +81,7 @@ In case of an error the API will respond with the appropriate HTTP error code. F
 The following example will return a log skeleton model for the given log in the body with a noise threshold of _3%_.
 `https://<domain>/log-skeleton?noise-threshold=0.03`
 
-The following example will return a log skeleton model for the given log in the body with a noise threshold of _3%_ and it will include the extended traces.
+The following example will return a log skeleton model for the given log in the body with a noise threshold of _10%_ and it will include the extended traces.
 `https://<domain>/log-skeleton?noise-threshold=0.1&extended-trace=true`
 
 The following example will return a _404_ error since there is no route called `/log-skleeton`.
