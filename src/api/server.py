@@ -1,5 +1,6 @@
 """Implemenation of the REST-API endpoint."""
 
+import os
 from flask import Flask, request, jsonify
 from src.components.logic.log_skeleton import Log_Skeleton
 from src.components.util.xes_importer \
@@ -22,7 +23,7 @@ app = Flask(__name__)
 importer = XES_Importer()
 
 
-@app.route('/log-skeleton', methods=['GET'])
+@app.route('/log-skeleton', methods=['GET', 'POST'])
 def log_skeleton():
     """Provide endpoint at /log-skeleton."""
     result, code = apply(request)
@@ -118,4 +119,6 @@ def apply(req):
     return model, __OK__
 
 
-app.run()
+if __name__ == "__main__":
+    print('Server running!...')
+    app.run(debug=True, host='0.0.0.0')
