@@ -94,8 +94,7 @@ def apply(req):
             importer.import_http_query(req,
                                        extended_trace=include_extended_traces)
     except:  # noqa: E722
-        return {'error_msg': """Unable to import XES log.
-                             Check your log on synax error"""}, \
+        return {'error_msg': "Unable to import XES log. Check your log on synax error"}, \
                 __BAD_REQUEST__
 
     lsk_algorithm = Log_Skeleton(log, activities,
