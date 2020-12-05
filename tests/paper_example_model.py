@@ -16,6 +16,8 @@ class Paper_Example_Model:
                 (TRACE_START[CONCEPT_NAME], TRACE_END[CONCEPT_NAME]),
                 (TRACE_START[CONCEPT_NAME], 'a1'),
                 ('a1', 'a1'),
+                ('a1', TRACE_START[CONCEPT_NAME]),
+                ('a1', TRACE_END[CONCEPT_NAME]),
                 ('a2', 'a2'),
                 ('a3', 'a3'),
                 ('a4', 'a4'),
@@ -26,7 +28,8 @@ class Paper_Example_Model:
                 ('a7', 'a7'),
                 ('a8', 'a8'),
                 (TRACE_END[CONCEPT_NAME], TRACE_END[CONCEPT_NAME]),
-                (TRACE_END[CONCEPT_NAME], TRACE_START[CONCEPT_NAME])
+                (TRACE_END[CONCEPT_NAME], TRACE_START[CONCEPT_NAME]),
+                (TRACE_END[CONCEPT_NAME], 'a1')
             ],
             'always_after': [
                 (TRACE_START[CONCEPT_NAME], 'a1'),
@@ -43,6 +46,8 @@ class Paper_Example_Model:
                 ('a4', 'a5'),
                 ('a4', TRACE_END[CONCEPT_NAME]),
                 ('a5', TRACE_END[CONCEPT_NAME]),
+                ('a6', 'a4'),
+                ('a6', 'a5'),
                 ('a6', TRACE_END[CONCEPT_NAME]),
                 ('a7', TRACE_END[CONCEPT_NAME]),
                 ('a8', TRACE_END[CONCEPT_NAME])
@@ -73,10 +78,7 @@ class Paper_Example_Model:
                 ('a6', 'a5'),
                 ('a7', 'a5'),
                 ('a8', 'a5'),
-                (TRACE_END[CONCEPT_NAME], 'a5'),
-                ('a5', 'a7'),
-                ('a5', 'a8'),
-                ('a5', TRACE_END[CONCEPT_NAME])
+                (TRACE_END[CONCEPT_NAME], 'a5')
             ],
             'never_together': [
                 ('a7', 'a8'),
