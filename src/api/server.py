@@ -32,7 +32,7 @@ def log_skeleton():
     return response, code
 
 
-def strToBool(value):
+def str_to_bool(value):
     """Convert a string value to bool.
 
     True in case:
@@ -81,7 +81,7 @@ def apply(req):
     # Extract extended traces parameter
     if trace_para is not None:
         try:
-            include_extended_traces = strToBool(trace_para)
+            include_extended_traces = str_to_bool(trace_para)
         except:  # noqa: E722
             return {
                 'error_msg': __EXTENDED_TRACE__ +

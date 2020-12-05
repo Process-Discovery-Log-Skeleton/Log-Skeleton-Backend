@@ -9,7 +9,16 @@
 </p>
 
 
-#### Installation & Setup
+#### 📄 Documentation
+
+The project provides a documentation in the [GitHub Wiki](https://github.com/Process-Discovery-Log-Skeleton/Log-Skeleton-Backend/wiki) page of this project. 
+
+It covers different topics like:
+- Implementation of the [Log-Skeleton algorithm](https://github.com/Process-Discovery-Log-Skeleton/Log-Skeleton-Backend/wiki/Log-Skeleton)
+- [XES Importer](https://github.com/Process-Discovery-Log-Skeleton/Log-Skeleton-Backend/wiki/XES-Importer)
+- [API setup & usage](https://github.com/Process-Discovery-Log-Skeleton/Log-Skeleton-Backend/wiki/API)
+
+#### 👷‍♀️ Installation & Setup
 
 This project requires python version < 3.9.x (some requirements are not compatible with 3.9.x).
 
@@ -35,18 +44,18 @@ To install the required dependencies use the following commands:
   ```pip install pm4py```
 
 
-#### Starting the API server
+#### 🚀 Starting the API server
 
-🚀 To start the application run:
+To start the application run:
 
   ```python -m src.api.server```
 
 This command will start a HTTP server for the API.
 
 
-#### Using the API
+#### 🌐 Using the API
 
-###### Endpoints:
+###### 🎯 Endpoints:
 
 ```/log-skeleton```
 
@@ -54,12 +63,12 @@ This HTTP endpoint will accept an XES event log as the input and return a log-sk
 
 Provide an XES event-log in the body of the request for the server.
 
-###### Parameters:
+###### 🔧 Parameters:
 
 - `noise-threshold`: Number between 0 and 1 to specitfy a _noise_threshold_ for the algorithm.
 - `extended-trace`: Boolean value indicating whether the trace extension will be included or not.
 
-###### The API-Response:
+###### 📦 The API-Response:
 
 In case the API gets used as it is inteded to be, it will return a JSON object containing the following items:
 
@@ -72,7 +81,7 @@ In case the API gets used as it is inteded to be, it will return a JSON object c
 - `counter`: Contains a JSON object representing the _counter_ relationships.
 - `parameters`: Contains a JSON object indicating the parameters applied and further information like IDs of the _trace start_ and _trace end_.
 
-###### Error codes
+###### ⛔️ Error codes
 
 In case of an error the API will respond with the appropriate HTTP error code. Further an error description will be provided in the response in the `error_msg` field.
 
