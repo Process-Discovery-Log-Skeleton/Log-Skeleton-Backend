@@ -172,18 +172,19 @@ class Relationship:
 
 class NonReflexiveRelationship(Relationship):
     """Relationship without reflexive entries.
-    
+
     They will be removed in the beginning to increase
     the performance of the algorithm.
     """
 
     def create_relation_superset(self):
         """Create the superset.
-        
+
         Filter all tuples of the type (x, x).
         """
-        return filter(lambda x: x[0] != x[1], 
-            super().create_relation_superset())
+        return filter(lambda x: x[0] != x[1],
+                      super().create_relation_superset())
+
 
 class Next_One_Way (Relationship):
     """Implementation of the next-one-way relationship algorithm."""

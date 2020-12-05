@@ -7,7 +7,7 @@ import os
 
 
 def compare_models(model) -> bool:
-    """Compare the given model to the transcripted"""
+    """Compare the given model to the transcripted."""
     paper_model = Paper_Example_Model.paper_example_model()
 
     relationships = [
@@ -43,7 +43,6 @@ def compare_models(model) -> bool:
 
 def model(extended_trace):
     """Generate the LS-model."""
-
     importer = XES_Importer()
 
     path = os.path.join(
@@ -58,7 +57,6 @@ def model(extended_trace):
 
 def test_log_skeleton_extended():
     """Check the correctness of the algorithm."""
-
     log_model = model(True)
 
     assert compare_models(log_model)
