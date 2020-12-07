@@ -1,3 +1,9 @@
+"""Event log cache.
+
+This module can be used to cache event-logs.
+The module automatically deletes cache items that don't get
+accessed for more than 10 minutes.
+"""
 
 from os import times, path
 from tempfile import NamedTemporaryFile
@@ -5,6 +11,7 @@ import uuid
 from datetime import date, datetime
 from appdirs import *
 import sched, time
+import flask
 
 # App name for caching files
 __APP_NAME__ = 'Log-Skeleton-Backend'
@@ -23,6 +30,9 @@ cache_dir = user_cache_dir(__APP_NAME__)
 
 s = sched.scheduler(time.time, time.sleep)
 
+# Make sure the cache dir exists
+if not os.path.exists(cache_dir):
+    os.makedirs(cache_dir)
 
 def __store_delete_time(id):
     """Store the id for deletion."""
@@ -69,13 +79,16 @@ def remove_event_log(id):
     delete_timestamps[id] = None
 
 
-def put_event_log(content) -> str:
+def put_event_log(file) -> str:
     
-    file = __save_to_file(content)
+    id = uuid.uuid4().hex
 
-    id = uuid.uuid5().hex
+    file.save(os.path.join(cache_dir, id + '.xes'))
 
-    event_store[id] = file.name
+
+    event_store[id] = id + '.xes'
+
+    print('Storing file at: ' + id + '.xes')
 
     __store_delete_time(id)
 
@@ -87,8 +100,10 @@ def pull_event_log(id):
     # Reschedule the deletion time of the event-log
     __store_delete_time(id)
 
-    return event_store[id]
+    return os.path.join(cache_dir, event_store[id])
 
 
-s.enter(60, 1, remove_overdue_event_log_entries, (s,))
-s.run()
+def start_event_store():
+
+    s.enter(60, 1, remove_overdue_event_log_entries, (s,))
+    s.run()
