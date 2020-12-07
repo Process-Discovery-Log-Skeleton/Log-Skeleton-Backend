@@ -21,7 +21,6 @@ class Log_Skeleton:
             all_activities : Collection of all occuring activities
             noise_threshold : Set sentivity level for the algorithms
         """
-        self.log = log
         self.relationships = {
             # Dictionary contains string representation of all classes
             rel.Always_Before: 'always_before',
@@ -34,6 +33,9 @@ class Log_Skeleton:
         }
         self.all_activities = all_activities
         self.include_trace_extensions = include_trace_extensions
+
+        self.log = log
+
         # Noise threshold only between 0 and 1
         self.noise_threshold = min(1.0, max(0.0, noise_threshold))
 
@@ -44,7 +46,9 @@ class Log_Skeleton:
         The corresponding value is the set with all
         activitiy pairs of that relationship.
         """
+
         res = {}
+
         for r in self.relationships:
             r_instance = r(self.log, self.all_activities,
                            self.noise_threshold,

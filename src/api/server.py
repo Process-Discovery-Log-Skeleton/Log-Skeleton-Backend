@@ -22,6 +22,8 @@ __BAD_REQUEST__ = 400
 # Http query strings/ defaul values
 __NOISE_THRESHOLD__ = 'noise-threshold'
 __NOISE_THRESHOLD_DEFAULT__ = 0.0
+__FORBIDDEN__ = 'forbidden'
+__REQUIRED__ = 'required'
 
 __EXTENDED_TRACE__ = 'extended-trace'
 __EXTENDED_TRACE_DEFAULT__ = False
@@ -114,6 +116,9 @@ def apply(id, req):
     noise_threshold = __NOISE_THRESHOLD_DEFAULT__
     include_extended_traces = __EXTENDED_TRACE_DEFAULT__
 
+    forbidden = req.args.getlist(__FORBIDDEN__)
+    required = req.args.getlist(__REQUIRED__)
+
     # Extract noise_threshold parameter
     if noise_para is not None:
         try:
@@ -134,18 +139,26 @@ def apply(id, req):
                 ' parameter must be a boolean value!'
             }, __BAD_REQUEST__
 
+    if forbidden is None:
+        forbidden = []
+
+    if required is None:
+        required = []
+
     try:
         path = event_store.pull_event_log(id)
 
-        log, activities = \
+        log, all_activities = \
             importer.import_file(path,
-                                       extended_trace=include_extended_traces)
+                                 forbidden,
+                                 required,
+                                 extended_trace=include_extended_traces)
     except:  # noqa: E722
         return {'error_msg': """Unable to import XES log.
                              Either the log is invalid or the id is not currect"""}, \
                 __BAD_REQUEST__
 
-    lsk_algorithm = Log_Skeleton(log, activities,
+    lsk_algorithm = Log_Skeleton(log, all_activities,
                                  noise_threshold,
                                  include_extended_traces)
 
