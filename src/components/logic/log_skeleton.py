@@ -46,7 +46,6 @@ class Log_Skeleton:
         The corresponding value is the set with all
         activitiy pairs of that relationship.
         """
-
         res = {}
 
         for r in self.relationships:

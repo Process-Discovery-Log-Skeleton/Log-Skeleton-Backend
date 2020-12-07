@@ -23,6 +23,7 @@ id = requests.post(
 print("Id: " + id)
 
 response = requests.post(
-    'http://localhost:5000/log-skeleton/' + id + '?noise-threshold=0&extended-trace=0')
+    'http://localhost:5000/log-skeleton/' +
+    id + '?noise-threshold=0&extended-trace=0')
 
 print(response.text)

@@ -5,13 +5,12 @@ The module automatically deletes cache items that don't get
 accessed for more than 10 minutes.
 """
 
-from os import times, path
-from tempfile import NamedTemporaryFile
+import os
 import uuid
-from datetime import date, datetime
-from appdirs import *
-import sched, time
-import flask
+from datetime import datetime
+import appdirs
+import sched
+import time
 
 # App name for caching files
 __APP_NAME__ = 'Log-Skeleton-Backend'
@@ -26,7 +25,7 @@ event_store = {}
 delete_timestamps = {}
 
 # Caching dir on the respective os
-cache_dir = user_cache_dir(__APP_NAME__)
+cache_dir = appdirs.user_cache_dir(__APP_NAME__)
 
 s = sched.scheduler(time.time, time.sleep)
 
@@ -34,10 +33,11 @@ s = sched.scheduler(time.time, time.sleep)
 if not os.path.exists(cache_dir):
     os.makedirs(cache_dir)
 
+
 def __store_delete_time(id):
     """Store the id for deletion."""
     now = datetime.now()
-    
+
     timestamp = datetime.timestamp(now)
 
     # Keep the file for one hour
@@ -54,7 +54,7 @@ def remove_overdue_event_log_entries(sc):
         # Check if the entry is overdue
         if delete_timestamps[id] <= timestamp:
             remove_event_log(id)
-    
+
     # Reschedule the task
     s.enter(60, 1, remove_overdue_event_log_entries, (s,))
 
@@ -71,7 +71,7 @@ def __save_to_file(self, content: str, id: str):
 
 
 def remove_event_log(id):
-    """Remove the file for the given id"""
+    """Remove the file for the given id."""
     os.remove(os.path.join(cache_dir, id))
 
     event_store[id] = None
@@ -80,11 +80,10 @@ def remove_event_log(id):
 
 
 def put_event_log(file) -> str:
-    
+    """Cache the event log."""
     id = uuid.uuid4().hex
 
     file.save(os.path.join(cache_dir, id + '.xes'))
-
 
     event_store[id] = id + '.xes'
 
@@ -96,7 +95,7 @@ def put_event_log(file) -> str:
 
 
 def pull_event_log(id):
-
+    """Pull the event-log path from the storage."""
     # Reschedule the deletion time of the event-log
     __store_delete_time(id)
 
@@ -104,6 +103,6 @@ def pull_event_log(id):
 
 
 def start_event_store():
-
+    """Start the event-log cache cleaner."""
     s.enter(60, 1, remove_overdue_event_log_entries, (s,))
     s.run()

@@ -278,7 +278,7 @@ class Counter(Relationship):
                 freq.append(len(self.project_trace(trace, [act])))
             if not len(freq) == 0:
                 counter[act] = {'sum': sum(freq), 'min': min(freq),
-                            'max': max(freq)}
+                                'max': max(freq)}
         return counter
 
 

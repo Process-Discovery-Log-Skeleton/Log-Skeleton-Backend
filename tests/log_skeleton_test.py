@@ -24,11 +24,8 @@ def compare_models(model) -> bool:
         rel1 = model[key]
         rel2 = paper_model[key]
 
-        print(key)
         rel1.sort()
         rel2.sort()
-        print(rel1)
-        print(rel2)
 
         if len(rel1) != len(rel2):
             return False
@@ -48,7 +45,8 @@ def model(extended_trace):
     path = os.path.join(
         os.path.dirname(__file__), '../res/logs/paper-example.xes')
 
-    log, activites = importer.import_file(path, extended_trace=extended_trace)
+    log, activites = \
+        importer.import_file(path, [], [], extended_trace=extended_trace)
 
     lsk_algo = Log_Skeleton(log, activites, 0.0, extended_trace)
 

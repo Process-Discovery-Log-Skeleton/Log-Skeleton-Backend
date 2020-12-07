@@ -5,7 +5,6 @@ from src.components.logic.log_skeleton import Log_Skeleton
 from src.components.util.xes_importer \
     import XES_Importer, TRACE_START, TRACE_END
 import src.components.util.event_store as event_store
-from werkzeug.utils import secure_filename
 
 __PARAMETERS__ = 'parameters'
 
@@ -37,16 +36,19 @@ ALLOWED_EXTENSIONS = {'.xes'}
 app = Flask(__name__)
 importer = XES_Importer()
 
+
 def allowed_file(filename):
     """Determine whether the file is allowed.
-    
+
     This is necessary to prevent cross-site-scripting.
     """
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 @app.route('/event-log', methods=['GET', 'POST', 'DELETE'])
 def event_log():
+    """Endpoint for uploading XES files."""
     method = request.method
 
     id = request.args.get(ID)
@@ -154,9 +156,10 @@ def apply(id, req):
                                  required,
                                  extended_trace=include_extended_traces)
     except:  # noqa: E722
-        return {'error_msg': """Unable to import XES log.
-                             Either the log is invalid or the id is not currect"""}, \
-                __BAD_REQUEST__
+        return {'error_msg': 'Unable to import XES log. \
+                             Either the log is invalid  \
+                             or the id is not currect'}, \
+            __BAD_REQUEST__
 
     lsk_algorithm = Log_Skeleton(log, all_activities,
                                  noise_threshold,
@@ -181,4 +184,3 @@ def apply(id, req):
 
 # event_store.start_event_store()
 app.run()
-
