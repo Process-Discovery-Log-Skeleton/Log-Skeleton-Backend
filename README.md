@@ -57,9 +57,18 @@ This command will start a HTTP server for the API.
 
 ###### 🎯 Endpoints:
 
-```/log-skeleton```
+```/event-log```
 
-This HTTP endpoint will accept an XES event log as the input and return a log-skeleton model based on that model.
+`POST`
+This HTTP endpoint will accept a `.xes` file attached to the HTTP request. It will store the file 
+on the server. The request will return an identifier which can be used to access the file in the 
+```/log-skeleton``` endpoint. The file will be deleted as soon as nobody accesses the file for 1 hour.
+
+###### ```/log-skeleton```
+
+`POST`
+
+This HTTP endpoint will accept an `id` as the input and return a log-skeleton model based on that model.
 
 Provide an XES event-log in the body of the request for the server.
 
@@ -67,6 +76,8 @@ Provide an XES event-log in the body of the request for the server.
 
 - `noise-threshold`: Number between 0 and 1 to specitfy a _noise_threshold_ for the algorithm.
 - `extended-trace`: Boolean value indicating whether the trace extension will be included or not.
+- `forbidden`: A set of forbidden activies.
+- `required`: A set of required activies.
 
 ###### 📦 The API-Response:
 
