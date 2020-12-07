@@ -182,5 +182,5 @@ def apply(id, req):
     return model, __OK__
 
 
-# event_store.start_event_store()
+event_store.start_event_store()
 app.run()

@@ -9,14 +9,14 @@ import os
 import uuid
 from datetime import datetime
 import appdirs
-import sched
 import time
+import _thread
 
 # App name for caching files
 __APP_NAME__ = 'Log-Skeleton-Backend'
 
-# 10 minutes = 600 sec
-__10_MINUTES__ = 600
+# 1 hour = 3600 sec
+__HOUR__ = 3600
 
 # Hash store for the event-log-files.
 event_store = {}
@@ -26,8 +26,6 @@ delete_timestamps = {}
 
 # Caching dir on the respective os
 cache_dir = appdirs.user_cache_dir(__APP_NAME__)
-
-s = sched.scheduler(time.time, time.sleep)
 
 # Make sure the cache dir exists
 if not os.path.exists(cache_dir):
@@ -41,10 +39,10 @@ def __store_delete_time(id):
     timestamp = datetime.timestamp(now)
 
     # Keep the file for one hour
-    delete_timestamps[id] = timestamp + __10_MINUTES__
+    delete_timestamps[id] = timestamp + __HOUR__
 
 
-def remove_overdue_event_log_entries(sc):
+def remove_overdue_event_log_entries():
     """Remove all event log that are overdue."""
     now = datetime.now()
 
@@ -54,9 +52,6 @@ def remove_overdue_event_log_entries(sc):
         # Check if the entry is overdue
         if delete_timestamps[id] <= timestamp:
             remove_event_log(id)
-
-    # Reschedule the task
-    s.enter(60, 1, remove_overdue_event_log_entries, (s,))
 
 
 def __save_to_file(self, content: str, id: str):
@@ -102,7 +97,17 @@ def pull_event_log(id):
     return os.path.join(cache_dir, event_store[id])
 
 
+def event_log_garbage_collector():
+    """Run the event-log garbage collection."""
+    while True:
+        remove_overdue_event_log_entries()
+        print('garbage')
+        time.sleep(60)
+
+
 def start_event_store():
-    """Start the event-log cache cleaner."""
-    s.enter(60, 1, remove_overdue_event_log_entries, (s,))
-    s.run()
+    """Start a new thread that keeps the event-log storage clean."""
+    try:
+        _thread.start_new_thread(event_log_garbage_collector, ())
+    except:  # noqa: E722
+        print("Error: unable to start thread")
