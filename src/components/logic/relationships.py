@@ -128,6 +128,9 @@ class Relationship:
 
         total_traces = len(self.log)
 
+        if total_traces == 0:
+            return list(results)
+
         if self.mode == Relationship.Mode.FORALL:  # For all condition
             for a1, a2 in source:
                 res = 0
@@ -273,8 +276,9 @@ class Counter(Relationship):
             freq = []
             for trace in self.log:
                 freq.append(len(self.project_trace(trace, [act])))
-            counter[act] = {'sum': sum(freq), 'min': min(freq),
-                            'max': max(freq)}
+            if not len(freq) == 0:
+                counter[act] = {'sum': sum(freq), 'min': min(freq),
+                                'max': max(freq)}
         return counter
 
 
