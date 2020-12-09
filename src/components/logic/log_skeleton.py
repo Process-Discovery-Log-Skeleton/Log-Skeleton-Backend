@@ -84,11 +84,11 @@ class Log_Skeleton:
         activitiy pairs of that relationship.
         """
         res = {}
-
+        extension = self.include_trace_extensions  # For the sake of flake...
         for r in self.working_relationships:
             r_instance = self.relationships[r](self.log, self.all_activities,
                                                self.noise_threshold,
-                                               self.include_trace_extensions)
+                                               include_extenstions=extension)
 
             res[r] = r_instance.apply()
         return res
