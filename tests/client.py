@@ -14,6 +14,7 @@ print('Loaded log...')
 
 headers = {'Content-Type': 'application/xml'}
 
+
 print('Posting file...')
 file = {'file': open(path, 'rb')}
 

@@ -1,6 +1,7 @@
 """Implemenation of the REST-API endpoint."""
 
 from flask import Flask, request, jsonify, flash
+
 from src.components.logic.log_skeleton import Log_Skeleton
 from src.components.util.xes_importer \
     import XES_Importer, TRACE_START, TRACE_END
@@ -35,6 +36,7 @@ ALLOWED_EXTENSIONS = {'.xes'}
 
 app = Flask(__name__)
 importer = XES_Importer()
+
 
 
 def allowed_file(filename):
@@ -156,6 +158,7 @@ def apply(id, req):
                                  required,
                                  extended_trace=include_extended_traces)
     except:  # noqa: E722
+
         return {'error_msg': 'Unable to import XES log. \
                              Either the log is invalid  \
                              or the id is not currect'}, \
@@ -180,6 +183,7 @@ def apply(id, req):
             importer.activity_concept_name(TRACE_END)
 
     return model, __OK__
+
 
 
 event_store.start_event_store()
