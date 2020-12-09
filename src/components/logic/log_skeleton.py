@@ -100,7 +100,7 @@ if __name__ == "__main__":
     path = os.path.join(
         os.path.dirname(__file__), '../../../res/logs/running-example.xes')
 
-    log_and_activset = importer.import_file(path)
+    log_and_activset = importer.import_file(path, [], [])
     log = log_and_activset[0]
     activset = log_and_activset[1]
 
@@ -110,5 +110,5 @@ if __name__ == "__main__":
             Parameters.NOISE_THRESHOLD: 0})
     print(skeleton)
     model = Log_Skeleton(log, activset, 0.1)
-    model.set_activities(['always_before', 'counter'])
+    model.set_working_relationships(['always_before', 'counter'])
     print(model.apply())
