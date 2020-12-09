@@ -128,6 +128,9 @@ class Relationship:
 
         total_traces = len(self.log)
 
+        if total_traces == 0:
+            return list(results)
+
         if self.mode == Relationship.Mode.FORALL:  # For all condition
             for a1, a2 in source:
                 res = 0
@@ -170,6 +173,22 @@ class Relationship:
         raise NotImplementedError
 
 
+class NonReflexiveRelationship(Relationship):
+    """Relationship without reflexive entries.
+
+    They will be removed in the beginning to increase
+    the performance of the algorithm.
+    """
+
+    def create_relation_superset(self):
+        """Create the superset.
+
+        Filter all tuples of the type (x, x).
+        """
+        return filter(lambda x: x[0] != x[1],
+                      super().create_relation_superset())
+
+
 class Next_One_Way (Relationship):
     """Implementation of the next-one-way relationship algorithm."""
 
@@ -199,7 +218,7 @@ class Next_Both_Ways (Next_One_Way):
         return list(next_both)
 
 
-class Never_Together (Relationship):
+class Never_Together (NonReflexiveRelationship):
     """Implementation of the never-together relationship."""
 
     def activity_pair_matches(self, trace, activity1, activity2):
@@ -221,7 +240,7 @@ class Equivalence (Relationship):
         return (len(projection1) == len(projection2))
 
 
-class Always_Before (Relationship):
+class Always_Before (NonReflexiveRelationship):
     """Implementation of the always-before relationship."""
 
     def activity_pair_matches(self, trace, activity1, activity2):
@@ -233,7 +252,7 @@ class Always_Before (Relationship):
                 or self.first(projection2) == activity2)
 
 
-class AlwaysAfter(Relationship):
+class AlwaysAfter(NonReflexiveRelationship):
     """Implementation of the always after relationship."""
 
     def activity_pair_matches(self, trace, activity1, activity2) -> bool:
@@ -257,8 +276,9 @@ class Counter(Relationship):
             freq = []
             for trace in self.log:
                 freq.append(len(self.project_trace(trace, [act])))
-            counter[act] = {'sum': sum(freq), 'min': min(freq),
-                            'max': max(freq)}
+            if not len(freq) == 0:
+                counter[act] = {'sum': sum(freq), 'min': min(freq),
+                                'max': max(freq)}
         return counter
 
 

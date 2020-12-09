@@ -26,7 +26,7 @@ class XES_Importer:
 
         return file
 
-    def import_file(self, path: str, extended_trace=True):
+    def import_file(self, path: str, forbidden, required, extended_trace=True):
         """Import XES event logs from a given file.
 
         Returns:
@@ -39,11 +39,14 @@ class XES_Importer:
             for i in range(len(log)):
                 log[i] = self.extended_trace(log[i])
 
-        activites = self.extract_activities(log)
+        activites = self.extract_activities(log, forbidden)
 
-        return (log, activites)
+        filtered_log = self.filter_log(log, forbidden, required)
 
-    def import_str(self, event_log: str, extended_trace=True):
+        return (filtered_log, activites)
+
+    def import_str(self, event_log: str,
+                   forbidden, required, extended_trace=True):
         """Import XES event logs from a given string.
 
         Returns:
@@ -52,9 +55,13 @@ class XES_Importer:
         """
         file = self.__save_to_temp_file(event_log)
 
-        return self.import_file(file.name, extended_trace=extended_trace)
+        return self.import_file(file.name,
+                                forbidden,
+                                required,
+                                extended_trace=extended_trace)
 
-    def import_http_query(self, request, extended_trace=True):
+    def import_http_query(self, request,
+                          forbidden, required, extended_trace=True):
         """Import XES event logs from a given HTTP request.
 
         Returns:
@@ -63,18 +70,52 @@ class XES_Importer:
         """
         data = str(request.data, 'utf-8')
 
-        return self.import_str(data, extended_trace=extended_trace)
+        return self.import_str(data,
+                               forbidden,
+                               required,
+                               extended_trace=extended_trace)
 
     # Trace extension
-    def extract_activities(self, log):
+    def extract_activities(self, log, forbidden):
         """Extract the activity set from the log."""
         activities = set()
 
         for trace in log:
             for activity in trace:
-                activities.add(self.activity_concept_name(activity))
+                name = self.activity_concept_name(activity)
+                if name not in forbidden:
+                    activities.add(name)
 
         return activities
+
+    def include_trace(self, trace, forbidden, required):
+        """Decide whether the trace will be included or not."""
+        mapped_trace = map(lambda ac:
+                           self.activity_concept_name(ac), trace)
+
+        for ac in forbidden:
+            if ac in mapped_trace:
+                return False
+
+        for ac in required:
+            if not (ac in mapped_trace):
+                return False
+
+        return True
+
+    def filter_log(self, log, forbidden, required):
+        """Filter all forbidden/ required activities.
+
+        A trace will only be included in case all the required
+        activities are included and none of the forbidden is included.
+        """
+        filtered_log = []
+
+        for trace in log:
+            if self.include_trace(trace, forbidden, required):
+                filtered_log.append(trace)
+
+        return filtered_log
 
     def extended_trace(self, trace):
         """Convert a trace to the extended trace."""

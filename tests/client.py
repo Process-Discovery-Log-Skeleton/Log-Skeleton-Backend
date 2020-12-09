@@ -14,10 +14,17 @@ print('Loaded log...')
 
 headers = {'Content-Type': 'application/xml'}
 
-print('Calling API...')
+
+print('Posting file...')
+file = {'file': open(path, 'rb')}
+
+id = requests.post(
+    'http://localhost:5000/event-log', files=file).text
+
+print("Id: " + id)
+
 response = requests.post(
-    # 'http://localhost:5000/log-skeleton?noise-threshold=0&extended-trace=0',
-    'https://log-skeleton-lzrv6ft6ka-ey.a.run.app/log-skeleton?noise-threshold=0&extended-trace=0',
-    data=event_log, headers=headers)
+    'http://localhost:5000/log-skeleton/' +
+    id + '?noise-threshold=0&extended-trace=0')
 
 print(response.text)
