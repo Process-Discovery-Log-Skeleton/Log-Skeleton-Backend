@@ -87,8 +87,8 @@ class Log_Skeleton:
 
         for r in self.working_relationships:
             r_instance = self.relationships[r](self.log, self.all_activities,
-                           self.noise_threshold,
-                           include_extenstions=self.include_trace_extensions)
+                                               self.noise_threshold,
+                                               self.include_trace_extensions)
 
             res[r] = r_instance.apply()
         return res
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     path = os.path.join(
         os.path.dirname(__file__), '../../../res/logs/running-example.xes')
 
-    log_and_activset = importer.import_file(path, [], [])
+    log_and_activset = importer.import_file(path)
     log = log_and_activset[0]
     activset = log_and_activset[1]
 
