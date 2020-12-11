@@ -18,8 +18,11 @@ headers = {'Content-Type': 'application/xml'}
 print('Posting file...')
 file = {'file': open(path, 'rb')}
 
-id = requests.post(
-    'http://localhost:5000/event-log', files=file).text
+res = requests.post(
+    'http://localhost:5000/event-log', files=file).json()
+
+
+id = str(res['id'])
 
 print("Id: " + id)
 

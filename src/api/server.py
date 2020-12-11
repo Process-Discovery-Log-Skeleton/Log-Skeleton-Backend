@@ -6,6 +6,9 @@ from src.components.logic.log_skeleton import Log_Skeleton
 from src.components.util.xes_importer \
     import XES_Importer, TRACE_START, TRACE_END
 import src.components.util.event_store as event_store
+from flask_cors import CORS, cross_origin
+
+
 
 __PARAMETERS__ = 'parameters'
 
@@ -32,11 +35,15 @@ ID = 'id'
 EVENT_LOG = 'event-log'
 FILE = 'file'
 
-ALLOWED_EXTENSIONS = {'.xes'}
+ALLOWED_EXTENSIONS = {'xes'}
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 importer = XES_Importer()
 
+app.secret_key = "my secret key"
 
 
 def allowed_file(filename):
@@ -57,31 +64,30 @@ def event_log():
 
     if method == POST:
         if FILE not in request.files:
-            flash('No selected file')
-            return
+            return jsonify({ 'error': "No selected file" }), __BAD_REQUEST__
         file = request.files[FILE]
-
         if file.filename == '':
-            flash('No selected file')
-            return
+            return jsonify({ 'error': "Empty files" }), __BAD_REQUEST__
 
-        if allowed_file(file.filename):
-            flash('Type of file not supported.')
-            return
+        if not allowed_file(file.filename):
+            return jsonify({ 'error': "File type not supported" }), __BAD_REQUEST__
 
         id = event_store.put_event_log(file)
 
-        return id
+        return jsonify({'id': id})
+    
+    return "Something is wrong"
 
 
 @app.route('/log-skeleton/<id>', methods=['GET', 'POST'])
+@cross_origin()
 def log_skeleton(id):
     """Provide endpoint at /log-skeleton."""
     result, code = apply(id, request)
 
     response = jsonify(result)
 
-    return response, code
+    return response
 
 
 def str_to_bool(value):
@@ -185,6 +191,6 @@ def apply(id, req):
     return model, __OK__
 
 
-
 event_store.start_event_store()
 app.run()
+

@@ -1,3 +1,4 @@
 pm4py
 flask
 appdirs
+flask_cors
