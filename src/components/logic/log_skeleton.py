@@ -91,7 +91,7 @@ class Log_Skeleton:
                                                include_extenstions=extension)
 
             res[r] = r_instance.apply()
-        res['activities'] = self.all_activities
+        res['activities'] = list(self.all_activities)
         return res
 
 
