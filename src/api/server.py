@@ -1,6 +1,7 @@
 """Implemenation of the REST-API endpoint."""
 
 from flask import Flask, request, jsonify, flash
+
 from src.components.logic.log_skeleton import Log_Skeleton
 from src.components.util.xes_importer \
     import XES_Importer, TRACE_START, TRACE_END
@@ -43,6 +44,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 importer = XES_Importer()
 
 app.secret_key = "my secret key"
+
 
 def allowed_file(filename):
     """Determine whether the file is allowed.
@@ -162,6 +164,7 @@ def apply(id, req):
                                  required,
                                  extended_trace=include_extended_traces)
     except:  # noqa: E722
+
         return {'error_msg': 'Unable to import XES log. \
                              Either the log is invalid  \
                              or the id is not currect'}, \
@@ -187,6 +190,7 @@ def apply(id, req):
 
     return model, __OK__
 
-if __name__ == "__main__":
-    event_store.start_event_store()
-    app.run()
+
+event_store.start_event_store()
+app.run()
+
