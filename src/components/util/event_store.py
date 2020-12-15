@@ -11,6 +11,10 @@ from datetime import datetime
 import appdirs
 import time
 import _thread
+from src.components.util.xes_importer import XES_Importer
+from pm4py.objects.conversion.log import converter as log_conv
+import pandas as pd
+from pm4py.objects.log.exporter.xes import exporter as xes_exporter
 
 # App name for caching files
 __APP_NAME__ = 'Log-Skeleton-Backend'
@@ -26,6 +30,8 @@ delete_timestamps = {}
 
 # Caching dir on the respective os
 cache_dir = appdirs.user_cache_dir(__APP_NAME__)
+
+print(cache_dir)
 
 # Make sure the cache dir exists
 if not os.path.exists(cache_dir):
@@ -78,13 +84,34 @@ def put_event_log(file) -> str:
     """Cache the event log."""
     id = uuid.uuid4().hex
 
-    file.save(os.path.join(cache_dir, id + '.xes'))
+    # file.save(os.path.join(cache_dir, id + '.xes'))
 
-    event_store[id] = id + '.xes'
+    filename = file.filename
 
-    print('Storing file at: ' + id + '.xes')
+    if filename.endswith('csv'):
+        path = os.path.join(cache_dir, id + '.csv')
+        file.save(path)
 
-    __store_delete_time(id)
+        log_csv = pd.read_csv(path, sep=',')
+        # log_csv.rename(columns={'clientID': 'case:clientID'}, inplace=True)
+        parameters = {log_conv.Variants.TO_EVENT_LOG.value.Parameters.CASE_ID_KEY: 'case'}
+        event_log = log_conv.apply(log_csv, parameters=parameters, variant=log_conv.Variants.TO_EVENT_LOG)
+
+        xes_exporter.apply(event_log, os.path.join(cache_dir, id + '.xes'))
+
+        with open(os.path.join(cache_dir, id + '.xes'), 'r') as f:
+            content = f.read().decode('utf-8')
+
+            event_store[id] = content
+
+    else:
+        content = file.read().decode('utf-8')
+
+        event_store[id] = content
+
+    print('Storing file at: ' + id)
+
+    # __store_delete_time(id)
 
     return id
 
@@ -92,9 +119,9 @@ def put_event_log(file) -> str:
 def pull_event_log(id):
     """Pull the event-log path from the storage."""
     # Reschedule the deletion time of the event-log
-    __store_delete_time(id)
+    # __store_delete_time(id)
 
-    return os.path.join(cache_dir, event_store[id])
+    return event_store[id]
 
 
 def event_log_garbage_collector():

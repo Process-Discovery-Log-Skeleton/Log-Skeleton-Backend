@@ -35,7 +35,7 @@ ID = 'id'
 EVENT_LOG = 'event-log'
 FILE = 'file'
 
-ALLOWED_EXTENSIONS = {'xes'}
+ALLOWED_EXTENSIONS = {'xes', 'csv'}
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -74,9 +74,21 @@ def event_log():
 
         id = event_store.put_event_log(file)
 
-        return jsonify({'id': id})
-    
-    return "Something is wrong"
+        importer = XES_Importer()
+
+        try:
+            content = event_store.pull_event_log(id)
+
+            log, activities = importer.import_str(content, [], [])
+
+            return jsonify({
+                'id': id, 
+                'activities': list(activities)
+            })
+        except:
+            return jsonify({ 'error': "Could not import file." }), __BAD_REQUEST__
+
+    return jsonify({ 'error': "Something is wrong"})
 
 
 @app.route('/log-skeleton/<id>', methods=['GET', 'POST'])
@@ -156,10 +168,10 @@ def apply(id, req):
         required = []
 
     try:
-        path = event_store.pull_event_log(id)
+        content = event_store.pull_event_log(id)
 
         log, all_activities = \
-            importer.import_file(path,
+            importer.import_str(content,
                                  forbidden,
                                  required,
                                  extended_trace=include_extended_traces)
@@ -191,6 +203,6 @@ def apply(id, req):
     return model, __OK__
 
 
-event_store.start_event_store()
+# event_store.start_event_store()
 app.run()
 
