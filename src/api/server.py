@@ -206,4 +206,7 @@ def apply(id, req):
 
 
 # event_store.start_event_store()
-app.run()
+# app.run()
+if __name__ == "__main__":
+     print('Server running!...')
+     app.run(debug=True, host='0.0.0.0')
