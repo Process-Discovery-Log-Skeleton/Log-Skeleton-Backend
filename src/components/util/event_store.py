@@ -11,7 +11,6 @@ from datetime import datetime
 import appdirs
 import time
 import _thread
-from src.components.util.xes_importer import XES_Importer
 from pm4py.objects.conversion.log import converter as log_conv
 import pandas as pd
 from pm4py.objects.log.exporter.xes import exporter as xes_exporter
@@ -94,8 +93,11 @@ def put_event_log(file) -> str:
 
         log_csv = pd.read_csv(path, sep=',')
         # log_csv.rename(columns={'clientID': 'case:clientID'}, inplace=True)
-        parameters = {log_conv.Variants.TO_EVENT_LOG.value.Parameters.CASE_ID_KEY: 'case'}
-        event_log = log_conv.apply(log_csv, parameters=parameters, variant=log_conv.Variants.TO_EVENT_LOG)
+        parameters = {log_conv.Variants.
+                      TO_EVENT_LOG.value.Parameters.CASE_ID_KEY: 'case'}
+        event_log = log_conv.apply(log_csv,
+                                   parameters=parameters,
+                                   variant=log_conv.Variants.TO_EVENT_LOG)
 
         xes_exporter.apply(event_log, os.path.join(cache_dir, id + '.xes'))
 

@@ -49,11 +49,11 @@ class Log_Skeleton:
         self.all_activities = activities
 
     def get_activities(self):
-        """Return the current set of activities"""
+        """Return the current set of activities."""
         return self.all_activities
 
     def set_working_relationships(self, working_relationships):
-        """Choose working set for the relationship
+        """Choose working set for the relationship.
 
         Parameters:
         working_relationships: A set or list of relationships as string
@@ -73,7 +73,7 @@ class Log_Skeleton:
                 self.working_relationships.add(r)
 
     def get_working_relationships(self):
-        """Return current working set of relationships """
+        """Return current working set of relationships."""
         return self.working_relationships
 
     def apply(self):

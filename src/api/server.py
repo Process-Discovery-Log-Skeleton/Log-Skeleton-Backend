@@ -1,13 +1,11 @@
 """Implemenation of the REST-API endpoint."""
 
-from flask import Flask, request, jsonify, flash
-
+from flask import Flask, request, jsonify
 from src.components.logic.log_skeleton import Log_Skeleton
 from src.components.util.xes_importer \
     import XES_Importer, TRACE_START, TRACE_END
 import src.components.util.event_store as event_store
 from flask_cors import CORS, cross_origin
-
 
 
 __PARAMETERS__ = 'parameters'
@@ -64,13 +62,15 @@ def event_log():
 
     if method == POST:
         if FILE not in request.files:
-            return jsonify({ 'error': "No selected file" }), __BAD_REQUEST__
+            return jsonify({'error': "No selected file"}), __BAD_REQUEST__
         file = request.files[FILE]
         if file.filename == '':
-            return jsonify({ 'error': "Empty files" }), __BAD_REQUEST__
+            return jsonify({'error': "Empty files"}), __BAD_REQUEST__
 
         if not allowed_file(file.filename):
-            return jsonify({ 'error': "File type not supported" }), __BAD_REQUEST__
+            return jsonify({
+                'error': "File type not supported"
+            }), __BAD_REQUEST__
 
         id = event_store.put_event_log(file)
 
@@ -82,13 +82,15 @@ def event_log():
             log, activities = importer.import_str(content, [], [])
 
             return jsonify({
-                'id': id, 
+                'id': id,
                 'activities': list(activities)
             })
-        except:
-            return jsonify({ 'error': "Could not import file." }), __BAD_REQUEST__
+        except:  # noqa: E722
+            return jsonify({
+                'error': "Could not import file."
+            }), __BAD_REQUEST__
 
-    return jsonify({ 'error': "Something is wrong"})
+    return jsonify({'error': "Something is wrong"})
 
 
 @app.route('/log-skeleton/<id>', methods=['GET', 'POST'])
@@ -172,9 +174,9 @@ def apply(id, req):
 
         log, all_activities = \
             importer.import_str(content,
-                                 forbidden,
-                                 required,
-                                 extended_trace=include_extended_traces)
+                                forbidden,
+                                required,
+                                extended_trace=include_extended_traces)
     except:  # noqa: E722
 
         return {'error_msg': 'Unable to import XES log. \
@@ -205,4 +207,3 @@ def apply(id, req):
 
 # event_store.start_event_store()
 app.run()
-
