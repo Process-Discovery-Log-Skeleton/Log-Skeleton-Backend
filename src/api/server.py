@@ -79,7 +79,8 @@ def event_log():
         try:
             content = event_store.pull_event_log(id)
 
-            log, activities = importer.import_str(content, [], [])
+            log, activities = \
+                importer.import_str(content, [], [], extended_trace=False)
 
             return jsonify({
                 'id': id,
