@@ -39,11 +39,11 @@ class XES_Importer:
             for i in range(len(log)):
                 log[i] = self.extended_trace(log[i])
 
-        activites = self.extract_activities(log, forbidden)
+        activites, filtered = self.extract_activities(log, forbidden)
 
         filtered_log = self.filter_log(log, forbidden, required)
 
-        return (filtered_log, activites)
+        return (filtered_log, list(activites), filtered)
 
     def import_str(self, event_log: str,
                    forbidden, required, extended_trace=True):
@@ -80,19 +80,22 @@ class XES_Importer:
         """Extract the activity set from the log."""
         activities = set()
 
+        filtered = set()
+
         for trace in log:
             for activity in trace:
                 name = self.activity_concept_name(activity)
+                activities.add(name)
                 if name not in forbidden:
-                    activities.add(name)
+                    filtered.add(name)
 
-        return activities
+        return activities, filtered
 
     def include_trace(self, trace, forbidden, required):
         """Decide whether the trace will be included or not."""
-        mapped_trace = map(lambda ac:
-                           self.activity_concept_name(ac), trace)
-
+        mapped_trace = list(map(lambda ac:
+                           self.activity_concept_name(ac), trace))
+        # print(mapped_trace)
         for ac in forbidden:
             if ac in mapped_trace:
                 return False
