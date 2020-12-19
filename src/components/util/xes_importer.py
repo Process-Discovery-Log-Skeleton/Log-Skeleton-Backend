@@ -94,7 +94,7 @@ class XES_Importer:
     def include_trace(self, trace, forbidden, required):
         """Decide whether the trace will be included or not."""
         mapped_trace = list(map(lambda ac:
-                           self.activity_concept_name(ac), trace))
+                            self.activity_concept_name(ac), trace))
         # print(mapped_trace)
         for ac in forbidden:
             if ac in mapped_trace:

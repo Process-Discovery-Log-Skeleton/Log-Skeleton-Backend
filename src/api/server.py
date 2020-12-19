@@ -9,7 +9,7 @@ from flask_cors import CORS, cross_origin
 
 
 PARAMETERS = 'parameters'
-LOG_SKELETON= 'model'
+LOG_SKELETON = 'model'
 ACTIVITIES = 'activities'
 
 # HTTP Methods
@@ -217,5 +217,5 @@ def apply(id, req):
 # event_store.start_event_store()
 # app.run()
 if __name__ == "__main__":
-     print('Server running!...')
-     app.run(debug=True, host='0.0.0.0')
+    print('Server running!...')
+    app.run(debug=True, host='0.0.0.0')

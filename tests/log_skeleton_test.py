@@ -45,7 +45,7 @@ def model(extended_trace):
     path = os.path.join(
         os.path.dirname(__file__), '../res/logs/paper-example.xes')
 
-    log, activites = \
+    log, activites, filtered = \
         importer.import_file(path, [], [], extended_trace=extended_trace)
 
     lsk_algo = Log_Skeleton(log, activites, 0.0, extended_trace)
