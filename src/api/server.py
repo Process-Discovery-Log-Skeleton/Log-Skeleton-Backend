@@ -8,7 +8,9 @@ import src.components.util.event_store as event_store
 from flask_cors import CORS, cross_origin
 
 
-__PARAMETERS__ = 'parameters'
+PARAMETERS = 'parameters'
+LOG_SKELETON = 'model'
+ACTIVITIES = 'activities'
 
 # HTTP Methods
 GET = 'GET'
@@ -23,8 +25,8 @@ __BAD_REQUEST__ = 400
 # Http query strings/ defaul values
 __NOISE_THRESHOLD__ = 'noise-threshold'
 __NOISE_THRESHOLD_DEFAULT__ = 0.0
-__FORBIDDEN__ = 'forbidden'
-__REQUIRED__ = 'required'
+FORBIDDEN = 'forbidden'
+REQUIRED = 'required'
 
 __EXTENDED_TRACE__ = 'extended-trace'
 __EXTENDED_TRACE_DEFAULT__ = False
@@ -79,7 +81,7 @@ def event_log():
         try:
             content = event_store.pull_event_log(id)
 
-            log, activities = \
+            log, activities, filtered = \
                 importer.import_str(content, [], [], extended_trace=False)
 
             return jsonify({
@@ -141,8 +143,8 @@ def apply(id, req):
     noise_threshold = __NOISE_THRESHOLD_DEFAULT__
     include_extended_traces = __EXTENDED_TRACE_DEFAULT__
 
-    forbidden = req.args.getlist(__FORBIDDEN__)
-    required = req.args.getlist(__REQUIRED__)
+    forbidden = req.args.getlist(FORBIDDEN)
+    required = req.args.getlist(REQUIRED)
 
     # Extract noise_threshold parameter
     if noise_para is not None:
@@ -173,7 +175,7 @@ def apply(id, req):
     try:
         content = event_store.pull_event_log(id)
 
-        log, all_activities = \
+        log, all_activities, filtered = \
             importer.import_str(content,
                                 forbidden,
                                 required,
@@ -185,29 +187,35 @@ def apply(id, req):
                              or the id is not currect'}, \
             __BAD_REQUEST__
 
-    lsk_algorithm = Log_Skeleton(log, all_activities,
+    lsk_algorithm = Log_Skeleton(log, filtered,
                                  noise_threshold,
                                  include_extended_traces)
 
     model = lsk_algorithm.apply()
 
-    model[__PARAMETERS__] = {
-        __NOISE_THRESHOLD__: lsk_algorithm.noise_threshold,
-        __EXTENDED_TRACE__: include_extended_traces
+    result = {
+        LOG_SKELETON: model,
+        ACTIVITIES: all_activities,
+        PARAMETERS: {
+            __NOISE_THRESHOLD__: lsk_algorithm.noise_threshold,
+            __EXTENDED_TRACE__: include_extended_traces,
+            FORBIDDEN: forbidden,
+            REQUIRED: required
+        }
     }
 
     if include_extended_traces:
         # Send the CONCEPT:NAME of the trace start/ end to the user
-        model[__PARAMETERS__]['trace-start'] = \
+        result[PARAMETERS]['trace-start'] = \
             importer.activity_concept_name(TRACE_START)
-        model[__PARAMETERS__]['trace-end'] = \
+        result[PARAMETERS]['trace-end'] = \
             importer.activity_concept_name(TRACE_END)
 
-    return model, __OK__
+    return result, __OK__
 
 
 # event_store.start_event_store()
 # app.run()
 if __name__ == "__main__":
-     print('Server running!...')
-     app.run(debug=True, host='0.0.0.0')
+    print('Server running!...')
+    app.run(debug=True, host='0.0.0.0')
