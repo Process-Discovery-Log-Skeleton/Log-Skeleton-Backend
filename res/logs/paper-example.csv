@@ -1,4 +1,4 @@
-,concept:name,org:resource,time:timestamp,Activity,Resource,Costs,case:concept:name,case:creator
+case,concept:name,org:resource,time:timestamp,Activity,Resource,Costs,case:concept:name,case:creator
 0,a1,Pete,2010-12-30 14:32:00+01:00,a1,Pete,50,1,Log-Skeleton-Team
 1,a2,Pete,2010-12-30 14:32:00+01:00,a2,Pete,50,1,Log-Skeleton-Team
 2,a4,Pete,2010-12-30 14:32:00+01:00,a4,Pete,50,1,Log-Skeleton-Team

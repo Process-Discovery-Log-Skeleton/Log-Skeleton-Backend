@@ -102,7 +102,7 @@ def put_event_log(file) -> str:
         xes_exporter.apply(event_log, os.path.join(cache_dir, id + '.xes'))
 
         with open(os.path.join(cache_dir, id + '.xes'), 'r') as f:
-            content = f.read().decode('utf-8')
+            content = f.read()
 
             event_store[id] = content
 
