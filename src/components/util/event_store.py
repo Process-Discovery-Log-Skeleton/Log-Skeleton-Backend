@@ -6,6 +6,7 @@ accessed for more than 10 minutes.
 """
 
 import os
+from shutil import Error
 import uuid
 from datetime import datetime
 import appdirs
@@ -36,6 +37,13 @@ print(cache_dir)
 if not os.path.exists(cache_dir):
     os.makedirs(cache_dir)
 
+path = os.path.join(
+        os.path.dirname(__file__), '../../../res/logs/running-example.xes')
+
+with open(path, 'r') as f:
+    content = f.read()
+
+    event_store['example'] = content
 
 def __store_delete_time(id):
     """Store the id for deletion."""
@@ -78,6 +86,13 @@ def remove_event_log(id):
 
     delete_timestamps[id] = None
 
+def put_event_log_str(content) -> str:
+    """Cache the event log."""
+    id = uuid.uuid4().hex
+
+    event_store[id] = content
+
+    return id
 
 def put_event_log(file) -> str:
     """Cache the event log."""
@@ -123,7 +138,12 @@ def pull_event_log(id):
     # Reschedule the deletion time of the event-log
     # __store_delete_time(id)
 
-    return event_store[id]
+    event_log = event_store[id]
+
+    if event_log is None:
+        raise EventLogNotFoundError
+
+    return event_log
 
 
 def event_log_garbage_collector():
@@ -140,3 +160,7 @@ def start_event_store():
         _thread.start_new_thread(event_log_garbage_collector, ())
     except:  # noqa: E722
         print("Error: unable to start thread")
+
+
+class EventLogNotFoundError (Error):
+    pass
