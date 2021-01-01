@@ -1,10 +1,11 @@
 """Implemenation of the REST-API endpoint."""
 
+from os import register_at_fork
 from flask import Flask, request, jsonify
 from src.components.logic.log_skeleton import Log_Skeleton
 from src.components.util.xes_importer \
     import XES_Importer, TRACE_START, TRACE_END
-import src.components.util.event_store as event_store
+from src.components.util.event_store import *
 from flask_cors import CORS, cross_origin
 
 
@@ -21,9 +22,10 @@ POST = 'POST'
 # Http status codes
 __OK__ = 200
 __BAD_REQUEST__ = 400
+__MISSING_RESOURCE__ = 410
 
 # Http query strings/ defaul values
-__NOISE_THRESHOLD__ = 'noise-threshold'
+__NOISE_THRESHOLD__ = 'noiseThreshold'
 __NOISE_THRESHOLD_DEFAULT__ = 0.0
 FORBIDDEN = 'forbidden'
 REQUIRED = 'required'
@@ -54,8 +56,25 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+@app.route('/event-log/example', methods=['GET', 'POST'])
+@cross_origin()
+def event_log_example():
 
-@app.route('/event-log', methods=['GET', 'POST', 'DELETE'])
+    content = pull_event_log('example')
+
+    importer = XES_Importer()
+
+    log, activities, filtered = \
+            importer.import_str(content, [], [], extended_trace=False)
+
+    return jsonify({
+        'id': 'example',
+        'activities': list(activities)
+    })
+
+
+@app.route('/event-log', methods=['GET', 'POST'])
+@cross_origin()
 def event_log():
     """Endpoint for uploading XES files."""
     method = request.method
@@ -74,12 +93,12 @@ def event_log():
                 'error': "File type not supported"
             }), __BAD_REQUEST__
 
-        id = event_store.put_event_log(file)
+        id = put_event_log(file)
 
         importer = XES_Importer()
 
         try:
-            content = event_store.pull_event_log(id)
+            content = pull_event_log(id)
 
             log, activities, filtered = \
                 importer.import_str(content, [], [], extended_trace=False)
@@ -97,14 +116,14 @@ def event_log():
 
 
 @app.route('/log-skeleton/<id>', methods=['GET', 'POST'])
-@cross_origin()
+# @cross_origin()
 def log_skeleton(id):
     """Provide endpoint at /log-skeleton."""
     result, code = apply(id, request)
 
     response = jsonify(result)
 
-    return response
+    return response, code
 
 
 def str_to_bool(value):
@@ -152,7 +171,7 @@ def apply(id, req):
             noise_threshold = float(noise_para)
         except:  # noqa: E722
             return {
-                'error_msg': __NOISE_THRESHOLD__ +
+                'error': __NOISE_THRESHOLD__ +
                 ' parameter must be a number (between 0 and 1) value!'
             }, __BAD_REQUEST__
 
@@ -162,7 +181,7 @@ def apply(id, req):
             include_extended_traces = str_to_bool(trace_para)
         except:  # noqa: E722
             return {
-                'error_msg': __EXTENDED_TRACE__ +
+                'error': __EXTENDED_TRACE__ +
                 ' parameter must be a boolean value!'
             }, __BAD_REQUEST__
 
@@ -173,16 +192,20 @@ def apply(id, req):
         required = []
 
     try:
-        content = event_store.pull_event_log(id)
+        content = pull_event_log(id)
 
         log, all_activities, filtered = \
             importer.import_str(content,
                                 forbidden,
                                 required,
                                 extended_trace=include_extended_traces)
-    except:  # noqa: E722
 
-        return {'error_msg': 'Unable to import XES log. \
+    except (EventLogNotFoundError, KeyError):
+        return {
+            'error': 'Cannot find the event log.'
+        }, __MISSING_RESOURCE__
+    except:  # noqa: E722
+        return {'error': 'Unable to import XES log. \
                              Either the log is invalid  \
                              or the id is not currect'}, \
             __BAD_REQUEST__
