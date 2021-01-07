@@ -45,6 +45,7 @@ with open(path, 'r') as f:
 
     event_store['example'] = content
 
+
 def __store_delete_time(id):
     """Store the id for deletion."""
     now = datetime.now()
@@ -86,6 +87,7 @@ def remove_event_log(id):
 
     delete_timestamps[id] = None
 
+
 def put_event_log_str(content) -> str:
     """Cache the event log."""
     id = uuid.uuid4().hex
@@ -94,7 +96,8 @@ def put_event_log_str(content) -> str:
 
     return id
 
-def put_event_log(file) -> str:
+
+def put_event_log(file, caseID, eventID) -> str:
     """Cache the event log."""
     id = uuid.uuid4().hex
 
@@ -106,10 +109,18 @@ def put_event_log(file) -> str:
         path = os.path.join(cache_dir, id + '.csv')
         file.save(path)
 
+        if caseID is None:
+            raise CaseIdNotFoundError
+
+        if eventID is None:
+            raise EventIdNotFoundError
+
         log_csv = pd.read_csv(path, sep=',')
         # log_csv.rename(columns={'clientID': 'case:clientID'}, inplace=True)
         parameters = {log_conv.Variants.
-                      TO_EVENT_LOG.value.Parameters.CASE_ID_KEY: 'case'}
+                      TO_EVENT_LOG.value.Parameters.CASE_ID_KEY: caseID,
+                      log_conv.Variants.TO_EVENT_LOG.value.
+                      Parameters.CASE_ATTRIBUTE_PREFIX: eventID}
         event_log = log_conv.apply(log_csv,
                                    parameters=parameters,
                                    variant=log_conv.Variants.TO_EVENT_LOG)
@@ -163,4 +174,12 @@ def start_event_store():
 
 
 class EventLogNotFoundError (Error):
+    pass
+
+
+class CaseIdNotFoundError (Error):
+    pass
+
+
+class EventIdNotFoundError (Error):
     pass
