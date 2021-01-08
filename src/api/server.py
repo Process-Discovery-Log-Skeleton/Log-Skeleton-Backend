@@ -1,6 +1,5 @@
 """Implemenation of the REST-API endpoint."""
 
-from os import register_at_fork
 from flask import Flask, request, jsonify
 from src.components.logic.log_skeleton import Log_Skeleton
 from src.components.util.xes_importer \
@@ -36,6 +35,8 @@ __EXTENDED_TRACE_DEFAULT__ = False
 ID = 'id'
 EVENT_LOG = 'event-log'
 FILE = 'file'
+CASE_ID = 'case-id'
+EVENT_ID = 'event-id'
 
 ALLOWED_EXTENSIONS = {'xes', 'csv'}
 
@@ -55,6 +56,7 @@ def allowed_file(filename):
     """
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/event-log/example', methods=['GET', 'POST'])
 @cross_origin()
@@ -93,11 +95,14 @@ def event_log():
                 'error': "File type not supported"
             }), __BAD_REQUEST__
 
-        id = put_event_log(file)
-
-        importer = XES_Importer()
+        caseID = request.args.get(CASE_ID)
+        eventID = request.args.get(EVENT_ID)
 
         try:
+            id = put_event_log(file, caseID, eventID)
+
+            importer = XES_Importer()
+
             content = pull_event_log(id)
 
             log, activities, filtered = \
