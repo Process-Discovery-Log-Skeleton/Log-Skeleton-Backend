@@ -36,7 +36,7 @@ ID = 'id'
 EVENT_LOG = 'event-log'
 FILE = 'file'
 CASE_ID = 'case-id'
-EVENT_ID = 'event-id'
+CASE_PREFIX = 'case-prefix'
 
 ALLOWED_EXTENSIONS = {'xes', 'csv'}
 
@@ -96,10 +96,10 @@ def event_log():
             }), __BAD_REQUEST__
 
         caseID = request.args.get(CASE_ID)
-        eventID = request.args.get(EVENT_ID)
+        casePrefix = request.args.get(CASE_PREFIX)
 
         try:
-            id = put_event_log(file, caseID, eventID)
+            id = put_event_log(file, caseID, casePrefix)
 
             importer = XES_Importer()
 
@@ -112,7 +112,8 @@ def event_log():
                 'id': id,
                 'activities': list(activities)
             })
-        except:  # noqa: E722
+        except Error as e:  # noqa: E722
+            print(e)
             return jsonify({
                 'error': "Could not import file."
             }), __BAD_REQUEST__
