@@ -97,7 +97,7 @@ def put_event_log_str(content) -> str:
     return id
 
 
-def put_event_log(file, caseID, eventID) -> str:
+def put_event_log(file, caseID, casePrefix) -> str:
     """Cache the event log."""
     id = uuid.uuid4().hex
 
@@ -112,15 +112,15 @@ def put_event_log(file, caseID, eventID) -> str:
         if caseID is None:
             raise CaseIdNotFoundError
 
-        if eventID is None:
-            raise EventIdNotFoundError
+        if casePrefix is None:
+            casePrefix = 'case:'
 
         log_csv = pd.read_csv(path, sep=',')
         # log_csv.rename(columns={'clientID': 'case:clientID'}, inplace=True)
         parameters = {log_conv.Variants.
                       TO_EVENT_LOG.value.Parameters.CASE_ID_KEY: caseID,
                       log_conv.Variants.TO_EVENT_LOG.value.
-                      Parameters.CASE_ATTRIBUTE_PREFIX: eventID}
+                      Parameters.CASE_ATTRIBUTE_PREFIX: casePrefix}
         event_log = log_conv.apply(log_csv,
                                    parameters=parameters,
                                    variant=log_conv.Variants.TO_EVENT_LOG)
