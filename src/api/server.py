@@ -112,8 +112,7 @@ def event_log():
                 'id': id,
                 'activities': list(activities)
             })
-        except Error as e:  # noqa: E722
-            print(e)
+        except:  # noqa: E722
             return jsonify({
                 'error': "Could not import file."
             }), __BAD_REQUEST__
@@ -213,7 +212,7 @@ def apply(id, req):
     except:  # noqa: E722
         return {'error': 'Unable to import XES log. \
                              Either the log is invalid  \
-                             or the id is not currect'}, \
+                             or the id is not correct'}, \
             __BAD_REQUEST__
 
     lsk_algorithm = Log_Skeleton(log, filtered,
